@@ -8,6 +8,7 @@ class Paint(object):
     DEFAULT_COLOR = 'black'
 
     def __init__(self):
+        # Create a GUI and name it
         self.root = Tk()
         self.root.title = 'EyePaint'
         # Create a notebook for different tabs
@@ -21,7 +22,7 @@ class Paint(object):
         self.tabControl.pack(expand=1, fill="both")
 
         # Button to switch between tabs:
-        self.switch_button = Button(self.tab1, text='Switch Tab', command=self.switch_tab())
+        self.switch_button = Button(self.tab1, text='Switch Tab', command=self.switch_tab)
         self.switch_button.grid(row=0, column=5)
 
         self.pen_button = Button(self.tab1, text='pen', command=self.use_pen)
