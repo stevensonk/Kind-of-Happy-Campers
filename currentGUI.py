@@ -1,7 +1,6 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter.colorchooser import askcolor
-from PIL import ImageGrab
 
 class Paint(object):
 
@@ -9,20 +8,16 @@ class Paint(object):
     DEFAULT_COLOR = 'black'
 
     def __init__(self):
-        # Create a GUI and name it
         self.root = Tk()
         self.root.title = 'EyePaint'
-        # Create a notebook for different tabs
         self.tabControl = ttk.Notebook(self.root)
 
-        # Create two tabs:
         self.tab1 = ttk.Frame(self.tabControl)
         self.tab2 = ttk.Frame(self.tabControl)
         self.tabControl.add(self.tab1, text='Tab 1')
-        self.tabControl.add(self.tab2, text='Tab 2')
+        self.tabControl.add(self.tab2, text='Colors')
         self.tabControl.pack(expand=1, fill="both")
 
-        # Button to switch between tabs:
         self.switch_button = Button(self.tab1, text='Switch Tab', command=self.switch_tab)
         self.switch_button.grid(row=0, column=5)
 
@@ -32,10 +27,12 @@ class Paint(object):
         self.brush_button = Button(self.tab1, text='brush', command=self.use_brush)
         self.brush_button.grid(row=0, column=1)
 
-        self.color_button = Button(self.tab1, text='color', command=self.choose_color)
+        color_button_png = PhotoImage(file='color_button.png')
+        self.color_button = Button(self.tab1, image = color_button_png, command=self.choose_color)
         self.color_button.grid(row=0, column=2)
 
-        self.eraser_button = Button(self.tab1, text='eraser', command=self.use_eraser)
+        eraser_button_png = PhotoImage(file='eraser_button.png')
+        self.eraser_button = Button(self.tab1, image = eraser_button_png, command=self.use_eraser)
         self.eraser_button.grid(row=0, column=3)
 
         self.choose_size_button = Scale(self.tab1, from_=1, to=10, orient=HORIZONTAL)
@@ -44,6 +41,9 @@ class Paint(object):
         self.c = Canvas(self.tab1, bg='white', width=600, height=600)
         self.c.grid(row=1, columnspan=5)
 
+
+        self.redColor = Button(self.tab2, text='red', command=self.colorRed)
+        self.redColor.grid(row=0, column=0)
         self.setup()
         self.root.mainloop()
 
@@ -92,6 +92,7 @@ class Paint(object):
     def reset(self, event):
         self.old_x, self.old_y = None, None
 
-
+    def colorRed(self):
+        self.color='red'
 if __name__ == '__main__':
     Paint()
