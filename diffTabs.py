@@ -10,14 +10,17 @@ class Paint(object):
     def __init__(self):
         self.root = Tk()
         self.root.title = 'EyePaint'
+        # Create a notebook for different tabs
         self.tabControl = ttk.Notebook(self.root)
 
+        # Create two tabs:
         self.tab1 = ttk.Frame(self.tabControl)
         self.tab2 = ttk.Frame(self.tabControl)
         self.tabControl.add(self.tab1, text='Tab 1')
         self.tabControl.add(self.tab2, text='Tab 2')
         self.tabControl.pack(expand=1, fill="both")
 
+        # Button to switch between tabs:
         self.switch_button = Button(self.tab1, text='Switch Tab', command=self.switch_tab())
         self.switch_button.grid(row=0, column=5)
 
