@@ -30,6 +30,7 @@ class Paint(object):
         self.brush_button = Button(self.tab1, text='brush', command=self.use_brush)
         self.brush_button.grid(row=0, column=1)
 
+        # Button on tab1 that moves to tab2 so that color can be selected
         color_button_png = PhotoImage(file='color_button.png')
         self.color_button = Button(self.tab1, image = color_button_png, command=self.choose_color)
         self.color_button.grid(row=0, column=2)
