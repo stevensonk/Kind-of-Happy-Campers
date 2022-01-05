@@ -12,14 +12,17 @@ class Paint(object):
         self.root.title = 'EyePaint'
         self.tabControl = ttk.Notebook(self.root)
 
+        # Create new tabs:
         self.tab1 = ttk.Frame(self.tabControl)
         self.tab2 = ttk.Frame(self.tabControl)
-        self.tabControl.add(self.tab1, text='Tab 1')
+        self.tab3 = ttk.Frame(self.tabControl)
+        self.tabControl.add(self.tab1, text='Drawing')
         self.tabControl.add(self.tab2, text='Colors')
+        self.tabControl.add(self.tab3, text='Tool')
         self.tabControl.pack(expand=1, fill="both")
 
-        self.switch_button = Button(self.tab1, text='Switch Tab', command=self.switch_tab)
-        self.switch_button.grid(row=0, column=5)
+        #self.switch_button = Button(self.tab1, text='Switch Tab', command=self.switch_tab)
+        #self.switch_button.grid(row=0, column=5)
 
         self.pen_button = Button(self.tab1, text='pen', command=self.use_pen)
         self.pen_button.grid(row=0, column=0)
@@ -30,6 +33,10 @@ class Paint(object):
         color_button_png = PhotoImage(file='color_button.png')
         self.color_button = Button(self.tab1, image = color_button_png, command=self.choose_color)
         self.color_button.grid(row=0, column=2)
+
+        # Adds button on tab2 to return to drawing (tab1)
+        self.return_from_color = Button(self.tab2, text='Return', command=self.return_to_drawing)
+        self.return_from_color.grid(row=0, column=2)
 
         eraser_button_png = PhotoImage(file='eraser_button.png')
         self.eraser_button = Button(self.tab1, image = eraser_button_png, command=self.use_eraser)
@@ -43,7 +50,7 @@ class Paint(object):
 
 
         self.redColor = Button(self.tab2, text='red', command=self.colorRed)
-        self.redColor.grid(row=0, column=0)
+        self.redColor.grid(row=2, column=0)
         self.setup()
         self.root.mainloop()
 
@@ -60,15 +67,21 @@ class Paint(object):
     def use_pen(self):
         self.activate_button(self.pen_button)
 
-    def switch_tab(self):
-        self.tabControl.select(self.tab2)
+    #def switch_tab(self):
+    #    self.tabControl.select(self.tab2)
+
+    def return_to_drawing(self):
+        """ Returns to tab1"""
+        self.tabControl.select(self.tab1)
 
     def use_brush(self):
         self.activate_button(self.brush_button)
 
     def choose_color(self):
+        """Opens tab2, which shows color options. Also turns eraser off"""
         self.eraser_on = False
-        self.color = askcolor(color=self.color)[1]
+        #self.color = askcolor(color=self.color)
+        self.tabControl.select(self.tab2)
 
     def use_eraser(self):
         self.activate_button(self.eraser_button, eraser_mode=True)
@@ -94,5 +107,8 @@ class Paint(object):
 
     def colorRed(self):
         self.color='red'
+
+
 if __name__ == '__main__':
     Paint()
+
