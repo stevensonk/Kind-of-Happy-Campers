@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter.colorchooser import askcolor
+from PIL import ImageGrab
 
 class Paint(object):
 
@@ -51,7 +52,7 @@ class Paint(object):
 
         # Save Button- CURRENTLY DOES NOTHING
         # TODO: make save button actually save file
-        self.save_button = Button(self.tab1, text='Save')
+        self.save_button = Button(self.tab1, text='Save', command=self.snapsave)
         self.save_button.grid(row=0, column=4)
 
         ## TAB 2: COLORS
@@ -157,6 +158,30 @@ class Paint(object):
 
     def reset(self, event):
         self.old_x, self.old_y = None, None
+
+
+    ## SAVING:
+    def snapsave(self):
+        #print('n def _snapsaveCanvas(self):')
+        canvas = self._canvas()  # Get Window Coordinates of Canvas
+        self.grabcanvas = ImageGrab.grab(bbox=canvas).save("test_image.jpg")
+        #print('Screencshot tkinter canvas and saved as "out_snapsave.jpg w/o displaying screenshoot."')
+
+    def _canvas(self):
+        #print('  def _canvas(self):')
+        #print('self.cv.winfo_rootx() = ', self.c.winfo_rootx())
+        #print('self.cv.winfo_rooty() = ', self.c.winfo_rooty())
+        #print('self.cv.winfo_x() =', self.c.winfo_x())
+        #print('self.cv.winfo_y() =', self.c.winfo_y())
+        #print('self.cv.winfo_width() =', self.c.winfo_width())
+        #print('self.cv.winfo_height() =', self.c.winfo_height())
+        x=self.c.winfo_rootx()+self.c.winfo_x()
+        y=self.c.winfo_rooty()+self.c.winfo_y()
+        x1=x+self.c.winfo_width()
+        y1=y+self.c.winfo_height()
+        box=(x,y,x1,y1)
+        #print('box = ', box)
+        return box
 
     ## COLOR FUNCTIONS:
     def colorRed(self):

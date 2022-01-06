@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter.colorchooser import askcolor
-from PIL import ImageGrab
+from PIL import Image, ImageTk, ImageGrab
 
 class Paint(object):
 
@@ -25,6 +25,10 @@ class Paint(object):
         # Button to switch between tabs:
         self.switch_button = Button(self.tab1, text='Switch Tab', command=self.switch_tab)
         self.switch_button.grid(row=0, column=5)
+
+        # Save Button
+        self.save_button = Button(self.tab1, text='Save', command=self._snapsaveCanvas)
+        self.save_button.grid(row=0, column=6)
 
         self.pen_button = Button(self.tab1, text='pen', command=self.use_pen)
         self.pen_button.grid(row=0, column=0)
@@ -91,6 +95,35 @@ class Paint(object):
 
     def reset(self, event):
         self.old_x, self.old_y = None, None
+
+    def save(self):
+        x=self.root.winfo_rootx()+self.c.winfo_x()
+        y=self.root.winfor_rooty()+self.c.winfo_y()
+        x1=x+self.c.winfo_width()
+        y1=y+self.c.winfo_height()
+        ImageGrab.grab()
+
+    def _snapsaveCanvas(self):
+        #print('n def _snapsaveCanvas(self):')
+        canvas = self._canvas()  # Get Window Coordinates of Canvas
+        self.grabcanvas = ImageGrab.grab(bbox=canvas).save("test_image.jpg")
+        #print('Screencshot tkinter canvas and saved as "out_snapsave.jpg w/o displaying screenshoot."')
+
+    def _canvas(self):
+        #print('  def _canvas(self):')
+        #print('self.cv.winfo_rootx() = ', self.c.winfo_rootx())
+        #print('self.cv.winfo_rooty() = ', self.c.winfo_rooty())
+        #print('self.cv.winfo_x() =', self.c.winfo_x())
+        #print('self.cv.winfo_y() =', self.c.winfo_y())
+        #print('self.cv.winfo_width() =', self.c.winfo_width())
+        #print('self.cv.winfo_height() =', self.c.winfo_height())
+        x=self.c.winfo_rootx()+self.c.winfo_x()
+        y=self.c.winfo_rooty()+self.c.winfo_y()
+        x1=x+self.c.winfo_width()
+        y1=y+self.c.winfo_height()
+        box=(x,y,x1,y1)
+        #print('box = ', box)
+        return box
 
 
 if __name__ == '__main__':
