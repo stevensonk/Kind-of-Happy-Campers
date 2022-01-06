@@ -51,7 +51,7 @@ class Paint(object):
         self.choose_size_button.grid(row=0, column=3)
 
         # Save Button- CURRENTLY DOES NOTHING
-        # TODO: make save button actually save file
+        # TODO: fix save problem
         self.save_button = Button(self.tab1, text='Save', command=self.snapsave)
         self.save_button.grid(row=0, column=4)
 
@@ -165,6 +165,7 @@ class Paint(object):
         #print('n def _snapsaveCanvas(self):')
         canvas = self._canvas()  # Get Window Coordinates of Canvas
         self.grabcanvas = ImageGrab.grab(bbox=canvas).save("test_image.jpg")
+        # TODO: save image name as something significant
         #print('Screencshot tkinter canvas and saved as "out_snapsave.jpg w/o displaying screenshoot."')
 
     def _canvas(self):
