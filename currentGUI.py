@@ -16,9 +16,11 @@ class Paint(object):
         self.tab1 = ttk.Frame(self.tabControl)  # Tab 1, for Drawing (main screen)
         self.tab2 = ttk.Frame(self.tabControl)  # Tab 2, for Color Selection
         self.tab3 = ttk.Frame(self.tabControl)  # Tab 3, for Tool Selection
+        self.tab4 = ttk.Frame(self.tabControl)  # Tab 4, for Thickness Selection
         self.tabControl.add(self.tab1, text='Drawing')
         self.tabControl.add(self.tab2, text='Colors')
         self.tabControl.add(self.tab3, text='Tool')
+        self.tabControl.add(self.tab4, text='Thickness')
         self.tabControl.pack(expand=1, fill="both")
 
         #self.switch_button = Button(self.tab1, text='Switch Tab', command=self.switch_tab)
@@ -54,12 +56,36 @@ class Paint(object):
 
         ## TAB 2: COLORS
         # TODO: Add more colors
-        self.redColor = Button(self.tab2, text='red', command=self.colorRed)
-        self.redColor.grid(row=2, column=0)
+        self.redColor = Button(self.tab2, text='red', bg='red', width=20, height=10, command=self.colorRed)
+        self.redColor.grid(row=1, column=1)
+
+        self.blueColor = Button(self.tab2, text='blue', bg='blue', width=20, height=10, command=self.colorBlue)
+        self.blueColor.grid(row=2, column=0)
+
+        self.yellowColor = Button(self.tab2, text='yellow', bg='yellow', width=20, height=10, command=self.colorYellow)
+        self.yellowColor.grid(row=2, column=2)
+
+        self.greenColor = Button(self.tab2, text='green', bg='green', width=20, height=10, command=self.colorGreen)
+        self.greenColor.grid(row=2, column=1)
+
+        self.orangeColor = Button(self.tab2, text='orange', bg='orange', width=20, height=10, command=self.colorOrange)
+        self.orangeColor.grid(row=1, column=2)
+
+        self.purpleColor = Button(self.tab2, text='purple', bg='purple', width=20, height=10, command=self.colorPurple)
+        self.purpleColor.grid(row=1, column=0)
+
+        self.blackColor = Button(self.tab2, text='black', bg='black', fg='white', width=20, height=10, command=self.colorBlack)
+        self.blackColor.grid(row=0, column=0)
+
+        self.greyColor = Button(self.tab2, text='grey', bg='grey', width=20, height=10, command=self.colorBlack)
+        self.greyColor.grid(row=0, column=1)
+
+        self.brownColor = Button(self.tab2, text='brown', bg='brown', width=20, height=10, command=self.colorBrown)
+        self.brownColor.grid(row=0, column=2)
 
         # Adds button on tab2 to return to drawing (tab1)
         self.return_from_color = Button(self.tab2, text='Return', command=self.return_to_drawing)
-        self.return_from_color.grid(row=0, column=2)
+        self.return_from_color.grid(row=3, column=1)
 
         ## TAB 3: TOOLS - TOOLS CURRENTLY ARE NOT DIFFERENT
         # TODO: Make tools look different
@@ -132,8 +158,38 @@ class Paint(object):
     def reset(self, event):
         self.old_x, self.old_y = None, None
 
+    ## COLOR FUNCTIONS:
     def colorRed(self):
         self.color='red'
+        self.redColor.config(relief=SUNKEN)
+
+    def colorBlue(self):
+        self.color='blue'
+        self.blueColor.config(relief=SUNKEN)
+
+    def colorYellow(self):
+        self.color='yellow'
+        self.yellowColor.config(relief=SUNKEN)
+
+    def colorGreen(self):
+        self.color='green'
+        self.greenColor.config(relief=SUNKEN)
+
+    def colorOrange(self):
+        self.color='orange'
+        self.orangeColor.config(relief=SUNKEN)
+
+    def colorPurple(self):
+        self.color='purple'
+        self.purpleColor.config(relief=SUNKEN)
+
+    def colorBlack(self):
+        self.color='black'
+        self.blackColor.config(relief=SUNKEN)
+
+    def colorBrown(self):
+        self.color='brown'
+        self.brownColor.config(relief=SUNKEN)
 
 
 if __name__ == '__main__':
