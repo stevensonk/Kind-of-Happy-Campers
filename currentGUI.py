@@ -3,6 +3,15 @@ from tkinter import ttk
 from tkinter.colorchooser import askcolor
 from PIL import ImageGrab
 
+""" TODO:
+        Make all buttons bigger (especially in drawing tab) - Carla
+        Create different tools - Veronica
+        Name at the beginning - Keely
+        Placement of buttons (especially in colors, thickness tabs) - Carla
+        Switching between drawing and selection modes (i.e. when pressing space bar) - All
+        Different Canvas sizes - Keely
+        """
+
 class Paint(object):
 
     DEFAULT_PEN_SIZE = 5.0
@@ -106,7 +115,6 @@ class Paint(object):
         self.return_from_tool.pack(side=BOTTOM)
 
         ##TAB 4: SIZE
-        # TODO: Add more sizes
         size1_png = PhotoImage(file='size_1.png')
         self.first_size = Button(self.tab4, image = size1_png,command=self.size1)
         self.first_size.place(relx=0, rely=0,anchor=NW)
