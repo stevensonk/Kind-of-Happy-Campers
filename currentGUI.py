@@ -38,7 +38,8 @@ class Paint(object):
         self.color_button.grid(row=0, column=1)
 
         # Button on tab1 that moves to tab 3 so that TOOL can be selected
-        self.tool_button = Button(self.tab1, text='Tool', command=self.choose_tool)
+        tool_button_png = PhotoImage(file='art_tools_button.png')
+        self.tool_button = Button(self.tab1, image = tool_button_png, command=self.choose_tool)
         self.tool_button.grid(row=0, column=0)
 
         # Eraser Button
@@ -47,12 +48,14 @@ class Paint(object):
         self.eraser_button.grid(row=0, column=2)
 
         # Size Selection
-        self.choose_size_button = Scale(self.tab1, from_=1, to=10, orient=HORIZONTAL)
+        size_button_png = PhotoImage(file='size_button.png')
+        self.choose_size_button = Button(self.tab1, image = size_button_png, command=self.choose_size)
         self.choose_size_button.grid(row=0, column=3)
 
         # Save Button- CURRENTLY DOES NOTHING
         # TODO: fix save problem
-        self.save_button = Button(self.tab1, text='Save', command=self.snapsave)
+        save_button_png = PhotoImage(file='save_button.png')
+        self.save_button = Button(self.tab1, image = save_button_png, command=self.snapsave)
         self.save_button.grid(row=0, column=4)
 
         ## TAB 2: COLORS
@@ -85,7 +88,8 @@ class Paint(object):
         self.brownColor.grid(row=0, column=2)
 
         # Adds button on tab2 to return to drawing (tab1)
-        self.return_from_color = Button(self.tab2, text='Return', command=self.return_to_drawing)
+        return_button_png = PhotoImage(file='return_button.png')
+        self.return_from_color = Button(self.tab2, image=return_button_png, command=self.return_to_drawing)
         self.return_from_color.grid(row=3, column=1)
 
         ## TAB 3: TOOLS - TOOLS CURRENTLY ARE NOT DIFFERENT
@@ -100,6 +104,29 @@ class Paint(object):
         self.return_from_tool = Button(self.tab3, text='Return', command=self.return_to_drawing)
         self.return_from_tool.grid(row=0, column=2)
 
+        ##TAB 4: SIZE
+        # TODO: Add more sizes
+        size1_png = PhotoImage(file='size_1.png')
+        self.first_size = Button(self.tab4, image = size1_png,command=self.size1)
+        self.first_size.grid(row=0, column=1)
+
+        size2_png = PhotoImage(file='size_2.png')
+        self.second_size = Button(self.tab4, image = size2_png,command=self.size2)
+        self.second_size.grid(row=0, column=2)
+
+        size3_png = PhotoImage(file='size_3.png')
+        self.third_size = Button(self.tab4, image = size3_png,command=self.size3)
+        self.third_size.grid(row=0, column=3)
+
+        size4_png = PhotoImage(file='size_4.png')
+        self.fourth_size = Button(self.tab4, image = size4_png,command=self.size4)
+        self.fourth_size.grid(row=1, column=1)
+
+        size5_png = PhotoImage(file='size_5.png')
+        self.fifth_size = Button(self.tab4, image = size5_png,command=self.size5)
+        self.fifth_size.grid(row=1, column=2)
+
+
         ## Sets up GUI and checks for user input:
         self.setup()
         self.root.mainloop()
@@ -107,7 +134,8 @@ class Paint(object):
     def setup(self):
         self.old_x = None
         self.old_y = None
-        self.line_width = self.choose_size_button.get()
+        self.line_width = 2
+        #self.line_width = self.choose_size_button
         self.color = self.DEFAULT_COLOR
         self.eraser_on = False
         self.active_button = self.pen_button
@@ -138,7 +166,11 @@ class Paint(object):
         self.tabControl.select(self.tab2)
 
     def use_eraser(self):
+        "Opens tab4, which shows size options."
         self.activate_button(self.eraser_button, eraser_mode=True)
+
+    def choose_size(self):
+        self.tabControl.select(self.tab4)
 
     def activate_button(self, some_button, eraser_mode=False):
         self.active_button.config(relief=RAISED)
@@ -147,7 +179,7 @@ class Paint(object):
         self.eraser_on = eraser_mode
 
     def paint(self, event):
-        self.line_width = self.choose_size_button.get()
+        #self.line_width = self.choose_size_button.get()
         paint_color = 'white' if self.eraser_on else self.color
         if self.old_x and self.old_y:
             self.c.create_line(self.old_x, self.old_y, event.x, event.y,
@@ -217,6 +249,26 @@ class Paint(object):
         self.color='brown'
         self.brownColor.config(relief=SUNKEN)
 
+    ## SIZE FUNCTIONS
+    def size1(self):
+        self.line_width = 2
+        self.first_size.config(relief=SUNKEN)
+
+    def size2(self):
+        self.line_width = 4
+        self.second_size.config(relief=SUNKEN)
+
+    def size3(self):
+        self.line_width = 6
+        self.third_size.config(relief=SUNKEN)
+
+    def size4(self):
+        self.line_width = 8
+        self.fourth_size.config(relief=SUNKEN)
+
+    def size5(self):
+        self.line_width = 10
+        self.fifth_size.config(relief=SUNKEN)
 
 if __name__ == '__main__':
     Paint()
