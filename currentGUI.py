@@ -52,8 +52,7 @@ class Paint(object):
         self.choose_size_button = Button(self.tab1, image = size_button_png, command=self.choose_size)
         self.choose_size_button.grid(row=0, column=3)
 
-        # Save Button- CURRENTLY DOES NOTHING
-        # TODO: fix save problem
+        # Save Button
         self.filename = StringVar()
         self.filename = 'filename'
         save_button_png = PhotoImage(file='save_button.png')
