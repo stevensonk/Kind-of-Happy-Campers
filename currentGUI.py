@@ -159,7 +159,6 @@ class Paint(object):
     def reset(self, event):
         self.old_x, self.old_y = None, None
 
-
     ## SAVING:
     def snapsave(self):
         #print('n def _snapsaveCanvas(self):')
@@ -169,13 +168,7 @@ class Paint(object):
         #print('Screencshot tkinter canvas and saved as "out_snapsave.jpg w/o displaying screenshoot."')
 
     def _canvas(self):
-        #print('  def _canvas(self):')
-        #print('self.cv.winfo_rootx() = ', self.c.winfo_rootx())
-        #print('self.cv.winfo_rooty() = ', self.c.winfo_rooty())
-        #print('self.cv.winfo_x() =', self.c.winfo_x())
-        #print('self.cv.winfo_y() =', self.c.winfo_y())
-        #print('self.cv.winfo_width() =', self.c.winfo_width())
-        #print('self.cv.winfo_height() =', self.c.winfo_height())
+        """Returns box which encompases canvas"""
         x=self.c.winfo_rootx()+self.c.winfo_x()
         y=self.c.winfo_rooty()+self.c.winfo_y()
         x1=x+self.c.winfo_width()

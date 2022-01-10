@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter.colorchooser import askcolor
 from PIL import Image, ImageTk, ImageGrab
+import time
 
 class Paint(object):
 
@@ -19,7 +20,7 @@ class Paint(object):
         self.tab1 = ttk.Frame(self.tabControl)
         self.tab2 = ttk.Frame(self.tabControl)
         self.tabControl.add(self.tab1, text='Tab 1')
-        self.tabControl.add(self.tab2, text='Tab 2')
+        self.tabControl.add(self.tab2, text='Save')
         self.tabControl.pack(expand=1, fill="both")
 
         # Button to switch between tabs:
@@ -47,6 +48,20 @@ class Paint(object):
 
         self.c = Canvas(self.tab1, bg='white', width=600, height=600)
         self.c.grid(row=1, columnspan=5)
+
+        # TAB 2: SAVE
+        self.label1 = Label(self.tab2, text='Save File')
+        self.label2 = Label(self.tab2, text='Filename:')
+        self.label1.grid(row=0, column=0)
+        self.label2.grid(row=1, column=0)
+        self.filename = StringVar()
+        self.filename = 'filename'
+        self.ask_filename = Entry(self.tab2, textvariable=self.filename)
+        self.ask_filename.grid(row=1, column=1)
+        self.get_filename = Button(self.tab2, text = 'Save', command = self._snapsaveCanvas)
+        self.get_filename.grid(row=2,column=0)
+        self.return_from_save = Button(self.tab2, text = 'Return', command = self.switch_tab)
+        self.return_from_save.grid(row=2, column=1)
 
         self.setup()
         self.root.mainloop()
@@ -104,25 +119,29 @@ class Paint(object):
         ImageGrab.grab()
 
     def _snapsaveCanvas(self):
-        #print('n def _snapsaveCanvas(self):')
+        self.tabControl.select(self.tab1)
         canvas = self._canvas()  # Get Window Coordinates of Canvas
-        self.grabcanvas = ImageGrab.grab(bbox=canvas).save("test_image.jpg")
+        # Create a Popup window
+        # self.popup = Toplevel(self.tab1)
+        # self.popup.title('Save')
+        # Ask for Title for save file
+        # self.tabControl.select(self.tab1)
+        self.filename = self.ask_filename.get()
+        print(self.filename)
+        savename = self.filename + ".jpg"
+        print(savename)
+        time.sleep(1)
+        self.grabcanvas = ImageGrab.grab(bbox=canvas).save(savename)
         #print('Screencshot tkinter canvas and saved as "out_snapsave.jpg w/o displaying screenshoot."')
 
     def _canvas(self):
-        #print('  def _canvas(self):')
-        #print('self.cv.winfo_rootx() = ', self.c.winfo_rootx())
-        #print('self.cv.winfo_rooty() = ', self.c.winfo_rooty())
-        #print('self.cv.winfo_x() =', self.c.winfo_x())
-        #print('self.cv.winfo_y() =', self.c.winfo_y())
-        #print('self.cv.winfo_width() =', self.c.winfo_width())
-        #print('self.cv.winfo_height() =', self.c.winfo_height())
-        x=self.c.winfo_rootx()+self.c.winfo_x()
-        y=self.c.winfo_rooty()+self.c.winfo_y()
-        x1=x+self.c.winfo_width()
-        y1=y+self.c.winfo_height()
+        x=self.root.winfo_rootx()+self.c.winfo_x()
+        y=self.root.winfo_rooty()
+        x1=x+800
+        y1=y+800
+        #x1=x+self.c.winfo_width()
+        #y1=y+self.c.winfo_height()
         box=(x,y,x1,y1)
-        #print('box = ', box)
         return box
 
 
