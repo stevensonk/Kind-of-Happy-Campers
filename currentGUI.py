@@ -54,6 +54,8 @@ class Paint(object):
 
         # Save Button- CURRENTLY DOES NOTHING
         # TODO: fix save problem
+        self.filename = StringVar()
+        self.filename = 'filename'
         save_button_png = PhotoImage(file='save_button.png')
         self.save_button = Button(self.tab1, image = save_button_png, command=self.snapsave)
         self.save_button.grid(row=0, column=4)
@@ -195,7 +197,8 @@ class Paint(object):
     def snapsave(self):
         #print('n def _snapsaveCanvas(self):')
         canvas = self._canvas()  # Get Window Coordinates of Canvas
-        self.grabcanvas = ImageGrab.grab(bbox=canvas).save("test_image.jpg")
+        savename = self.filename + '.jpg'
+        self.grabcanvas = ImageGrab.grab(bbox=canvas).save(savename)
         # TODO: save image name as something significant
         #print('Screencshot tkinter canvas and saved as "out_snapsave.jpg w/o displaying screenshoot."')
 

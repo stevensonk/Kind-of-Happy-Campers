@@ -119,15 +119,16 @@ class Paint(object):
         ImageGrab.grab()
 
     def _snapsaveCanvas(self):
-        self.tabControl.select(self.tab1)
+        #self.tabControl.select(self.tab1)
         canvas = self._canvas()  # Get Window Coordinates of Canvas
         # Create a Popup window
         # self.popup = Toplevel(self.tab1)
         # self.popup.title('Save')
         # Ask for Title for save file
         # self.tabControl.select(self.tab1)
-        self.filename = self.ask_filename.get()
-        print(self.filename)
+        #self.filename = self.ask_filename.get()
+        #print(self.filename)
+        self.get_name()
         savename = self.filename + ".jpg"
         print(savename)
         time.sleep(1)
@@ -143,6 +144,13 @@ class Paint(object):
         #y1=y+self.c.winfo_height()
         box=(x,y,x1,y1)
         return box
+
+    def get_name(self):
+        self.filename = self.ask_filename.get()
+        print(self.filename)
+        savename = self.filename + ".jpg"
+        print(savename)
+        self.tabControl.select(self.tab1)
 
 
 if __name__ == '__main__':
