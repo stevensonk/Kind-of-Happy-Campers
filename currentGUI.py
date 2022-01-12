@@ -6,7 +6,6 @@ from PIL import ImageGrab
 """ TODO:
         Make all buttons bigger (especially in drawing tab) - Carla
         Create different tools - Veronica
-        Name at the beginning - Keely
         Placement of buttons (especially in colors, thickness tabs) - Carla
         Switching between drawing and selection modes (i.e. when pressing space bar) - All
         Different Canvas sizes - Keely
@@ -22,19 +21,20 @@ class Paint(object):
         #self.root.title = 'EyePaint'
         self.tabControl = ttk.Notebook(self.root)
 
-        # Create Popup for naming
+        # Create Popup for naming:
         self.popup = Toplevel()
         self.popup.wm_title("Name")
-        self.popup.attributes("-topmost", True)
+        self.popup.attributes("-topmost", True) # New window will be at the foreground
         self.label1 = Label(self.popup, text='Name Your File')
         self.label2 = Label(self.popup, text='Filename:')
         self.label1.grid(row=0, column=0)
         self.label2.grid(row=1, column=0)
-        self.filename = StringVar()
+        self.filename = StringVar() # Creates variable for the file name to be stored
         self.filename = 'filename'
-        self.ask_filename = Entry(self.popup, textvariable=self.filename)
+        self.ask_filename = Entry(self.popup, textvariable=self.filename) # Entry box for name to be typed
+        self.ask_filename.insert(0, "filename") # Default for the name of the file is "filename.jpg"
         self.ask_filename.grid(row=1, column=1)
-        self.get_filename = Button(self.popup, text='Continue', command=self.get_name)
+        self.get_filename = Button(self.popup, text='Continue', command=self.get_name) # Press Button to continue
         self.get_filename.grid(row=2, column=0)
 
         # Create new tabs:
@@ -82,7 +82,6 @@ class Paint(object):
         self.save_button.pack(side=TOP, pady=50)
 
         ## TAB 2: COLORS
-        # TODO: Add more colors
         self.redColor = Button(self.tab2, text='red', bg='red', width=20, height=10, command=self.colorRed)
         self.redColor.place(relx=0, rely=0,anchor=NW)
 
@@ -104,7 +103,7 @@ class Paint(object):
         self.blackColor = Button(self.tab2, text='black', bg='black', fg='white', width=20, height=10, command=self.colorBlack)
         self.blackColor.place(relx=0, rely=.8,anchor=SW)
 
-        self.greyColor = Button(self.tab2, text='grey', bg='grey', width=20, height=10, command=self.colorBlack)
+        self.greyColor = Button(self.tab2, text='grey', bg='grey', width=20, height=10, command=self.colorGrey)
         self.greyColor.place(relx=.32, rely=.8,anchor=S)
 
         self.brownColor = Button(self.tab2, text='brown', bg='brown', width=20, height=10, command=self.colorBrown)
@@ -234,6 +233,15 @@ class Paint(object):
         #print('box = ', box)
         return box
 
+    def get_name(self):
+        """ Takes the text in the ask_filename entry widget in the starting popup window and names it to the filename
+            variable. Destroys the popup window so that the user can now draw."""
+        self.filename = self.ask_filename.get()
+        #print(self.filename)
+        savename = self.filename + ".jpg"
+        #print(savename)
+        self.popup.destroy()
+
     ## COLOR FUNCTIONS:
     def colorRed(self):
         self.color='red'
@@ -267,6 +275,10 @@ class Paint(object):
         self.color='brown'
         self.brownColor.config(relief=SUNKEN)
 
+    def colorGrey(self):
+        self.color='grey'
+        self.greyColor.config(relifer=SUNKEN)
+
     ## SIZE FUNCTIONS
     def size1(self):
         self.line_width = 2
@@ -288,12 +300,6 @@ class Paint(object):
         self.line_width = 10
         self.fifth_size.config(relief=SUNKEN)
 
-    def get_name(self):
-        self.filename = self.ask_filename.get()
-        print(self.filename)
-        savename = self.filename + ".jpg"
-        print(savename)
-        self.popup.destroy()
 
 if __name__ == '__main__':
     Paint()
