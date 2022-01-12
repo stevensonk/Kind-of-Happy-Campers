@@ -179,7 +179,7 @@ class Paint(object):
         self.c.bind('<B1-Motion>', self.paint)
         self.c.bind('<ButtonRelease-1>', self.reset)
 
-        self.stack = []
+        #self.stack = []
 
 
     def choose_tool(self):
