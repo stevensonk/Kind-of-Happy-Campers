@@ -19,8 +19,23 @@ class Paint(object):
 
     def __init__(self):
         self.root = Tk()
-        self.root.title = 'EyePaint'
+        #self.root.title = 'EyePaint'
         self.tabControl = ttk.Notebook(self.root)
+
+        # Create Popup for naming
+        self.popup = Toplevel()
+        self.popup.wm_title("Name")
+        self.popup.attributes("-topmost", True)
+        self.label1 = Label(self.popup, text='Name Your File')
+        self.label2 = Label(self.popup, text='Filename:')
+        self.label1.grid(row=0, column=0)
+        self.label2.grid(row=1, column=0)
+        self.filename = StringVar()
+        self.filename = 'filename'
+        self.ask_filename = Entry(self.popup, textvariable=self.filename)
+        self.ask_filename.grid(row=1, column=1)
+        self.get_filename = Button(self.popup, text='Continue', command=self.get_name)
+        self.get_filename.grid(row=2, column=0)
 
         # Create new tabs:
         self.tab1 = ttk.Frame(self.tabControl)  # Tab 1, for Drawing (main screen)
@@ -62,8 +77,6 @@ class Paint(object):
         self.choose_size_button.pack(side=TOP, pady=50)
 
         # Save Button
-        self.filename = StringVar()
-        self.filename = 'filename'
         save_button_png = PhotoImage(file='save_button.png')
         self.save_button = Button(self.tab1, image = save_button_png, command=self.snapsave)
         self.save_button.pack(side=TOP, pady=50)
@@ -209,7 +222,6 @@ class Paint(object):
         canvas = self._canvas()  # Get Window Coordinates of Canvas
         savename = self.filename + '.jpg'
         self.grabcanvas = ImageGrab.grab(bbox=canvas).save(savename)
-        # TODO: save image name as something significant
         #print('Screencshot tkinter canvas and saved as "out_snapsave.jpg w/o displaying screenshoot."')
 
     def _canvas(self):
@@ -275,6 +287,13 @@ class Paint(object):
     def size5(self):
         self.line_width = 10
         self.fifth_size.config(relief=SUNKEN)
+
+    def get_name(self):
+        self.filename = self.ask_filename.get()
+        print(self.filename)
+        savename = self.filename + ".jpg"
+        print(savename)
+        self.popup.destroy()
 
 if __name__ == '__main__':
     Paint()

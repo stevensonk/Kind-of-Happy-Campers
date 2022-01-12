@@ -12,9 +12,24 @@ class Paint(object):
     def __init__(self):
         # Create a GUI and name it
         self.root = Tk()
-        self.root.title = 'EyePaint'
+        #self.root.title = 'EyePaint'
         # Create a notebook for different tabs
         self.tabControl = ttk.Notebook(self.root)
+
+        # Create Popup for naming
+        self.popup = Toplevel()
+        self.popup.wm_title("Name")
+        self.popup.attributes("-topmost", True)
+        self.label1 = Label(self.popup, text='Name Your File')
+        self.label2 = Label(self.popup, text='Filename:')
+        self.label1.grid(row=0, column=0)
+        self.label2.grid(row=1, column=0)
+        self.filename = StringVar()
+        self.filename = 'filename'
+        self.ask_filename = Entry(self.popup, textvariable=self.filename)
+        self.ask_filename.grid(row=1, column=1)
+        self.get_filename = Button(self.popup, text='Continue', command=self.get_name)
+        self.get_filename.grid(row=2, column=0)
 
         # Create two tabs:
         self.tab1 = ttk.Frame(self.tabControl)
@@ -49,7 +64,7 @@ class Paint(object):
         self.c = Canvas(self.tab1, bg='white', width=600, height=600)
         self.c.grid(row=1, columnspan=5)
 
-        # TAB 2: SAVE
+        """"# TAB 2: SAVE
         self.label1 = Label(self.tab2, text='Save File')
         self.label2 = Label(self.tab2, text='Filename:')
         self.label1.grid(row=0, column=0)
@@ -61,7 +76,7 @@ class Paint(object):
         self.get_filename = Button(self.tab2, text = 'Save', command = self._snapsaveCanvas)
         self.get_filename.grid(row=2,column=0)
         self.return_from_save = Button(self.tab2, text = 'Return', command = self.switch_tab)
-        self.return_from_save.grid(row=2, column=1)
+        self.return_from_save.grid(row=2, column=1)"""
 
         self.setup()
         self.root.mainloop()
@@ -150,7 +165,7 @@ class Paint(object):
         print(self.filename)
         savename = self.filename + ".jpg"
         print(savename)
-        self.tabControl.select(self.tab1)
+        self.popup.destroy()
 
 
 if __name__ == '__main__':
