@@ -37,7 +37,6 @@ class Paint(object):
         self.get_filename = Button(self.popup, text='Continue', command=self.get_name) # Press Button to continue
         self.get_filename.grid(row=2, column=0)
 
-
         # Create new tabs:
         self.tab1 = ttk.Frame(self.tabControl)  # Tab 1, for Drawing (main screen)
         self.tab2 = ttk.Frame(self.tabControl)  # Tab 2, for Color Selection
@@ -49,8 +48,6 @@ class Paint(object):
         self.tabControl.add(self.tab4, text='Thickness')
         self.tabControl.pack(expand=1, fill="both")
 
-        #self.switch_button = Button(self.tab1, text='Switch Tab', command=self.switch_tab)
-        #self.switch_button.grid(row=0, column=5)
 
         ## TAB 1: DRAWING
         # The canvas for drawing:
@@ -59,34 +56,35 @@ class Paint(object):
 
         # Button on tab1 that moves to tab2 so that COLOR can be selected
         color_button_png = PhotoImage(file='color_button.png')
-        self.color_button = Button(self.tab1, image = color_button_png, height = 100, width = 100, command=self.choose_color)
-        self.color_button.pack(side=TOP, pady=20)
+        self.color_button = Button(self.tab1, image = color_button_png, height = 80, width = 80, command=self.choose_color)
+        self.color_button.pack(side=TOP, pady=10)
 
         # Button on tab1 that moves to tab 3 so that TOOL can be selected
         tool_button_png = PhotoImage(file='art_tools_button.png')
-        self.tool_button = Button(self.tab1, image = tool_button_png, height = 100, width = 100, command=self.choose_tool)
-        self.tool_button.pack(side=TOP, pady=20)
+        self.tool_button = Button(self.tab1, image = tool_button_png, height = 80, width = 80, command=self.choose_tool)
+        self.tool_button.pack(side=TOP, pady=10)
 
         # Eraser Button
         eraser_button_png = PhotoImage(file='eraser_button.png')
-        self.eraser_button = Button(self.tab1, image = eraser_button_png, height = 100, width = 100, command=self.use_eraser)
-        self.eraser_button.pack(side=TOP,pady=20)
+        self.eraser_button = Button(self.tab1, image = eraser_button_png, height = 80, width = 80, command=self.use_eraser)
+        self.eraser_button.pack(side=TOP,pady=10)
 
         # Size Selection
         size_button_png = PhotoImage(file='size_button.png')
-        self.choose_size_button = Button(self.tab1, image = size_button_png, height = 100, width = 100, command=self.choose_size)
-        self.choose_size_button.pack(side=TOP,pady=20)
+        self.choose_size_button = Button(self.tab1, image = size_button_png, height = 80, width = 80, command=self.choose_size)
+        self.choose_size_button.pack(side=TOP,pady=10)
 
         # Save Button
         self.filename = StringVar()
         self.filename = 'filename'
         save_button_png = PhotoImage(file='save_button.png')
-        self.save_button = Button(self.tab1, image = save_button_png, height = 100, width = 100, command=self.snapsave)
-        self.save_button.pack(side=TOP,pady=20)
+        self.save_button = Button(self.tab1, image = save_button_png, height = 80, width = 80, command=self.snapsave)
+        self.save_button.pack(side=TOP,pady=10)
 
         # Undo Button
-        #self.undo_button = Button(self.tab1, text = 'undo', height = 10, width = 10, command = self.undo)
-        #self.undo_button.pack(side=TOP,pady=20)
+        undo_button_png = PhotoImage(file='undo_button.png')
+        self.undo_button = Button(self.tab1, image = undo_button_png, height = 80, width = 80, command = self.undo)
+        self.undo_button.pack(side=TOP,pady=10)
 
         ## TAB 2: COLORS
         # TODO: Add more colors
@@ -164,7 +162,9 @@ class Paint(object):
         self.return_from_size = Button(self.tab4, image=return_button_png, height=125, width=125,command=self.return_to_drawing)
         self.return_from_size.pack(side=BOTTOM)
 
+
         ## Sets up GUI and checks for user input:
+        self.linelist = [self.c.create_line(0,0,0,0, width = 0, fill ='black',capstyle = ROUND, smooth=TRUE, splinesteps=36)]
         self.setup()
         self.root.mainloop()
 
@@ -176,10 +176,8 @@ class Paint(object):
         self.color = self.DEFAULT_COLOR
         self.eraser_on = False
         self.active_button = self.pen_button
-        self.c.bind('<B1-Motion>', self.paint)
+        self.c.bind('<Motion>', self.paint)
         self.c.bind('<ButtonRelease-1>', self.reset)
-
-        self.stack = []
 
 
     def choose_tool(self):
@@ -212,10 +210,9 @@ class Paint(object):
     def choose_size(self):
         self.tabControl.select(self.tab4)
 
-    #def undo(self):
-        #x = self.stack.pop()
-        #self.c.delete(x)
-
+    def undo(self):
+        for k in range(len(self.linelist)):
+            self.c.delete(self.linelist[k])
 
     def activate_button(self, some_button, eraser_mode=False):
         self.active_button.config(relief=RAISED)
@@ -227,13 +224,14 @@ class Paint(object):
         #self.line_width = self.choose_size_button.get()
         paint_color = 'white' if self.eraser_on else self.color
         if self.old_x and self.old_y:
-            self.c.create_line(self.old_x, self.old_y, event.x, event.y,
+            newline = self.c.create_line(self.old_x, self.old_y, event.x, event.y,
                                width=self.line_width, fill=paint_color,
                                capstyle=ROUND,smooth=TRUE, splinesteps=36)
+            self.linelist.append(newline)
         self.old_x = event.x
         self.old_y = event.y
 
-        #self.stack.append(event.x)
+
 
 
 
