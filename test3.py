@@ -3,6 +3,8 @@ from tkinter import ttk
 from tkinter.colorchooser import askcolor
 from PIL import ImageGrab
 
+
+
 class Paint(object):
 
     DEFAULT_PEN_SIZE = 5.0
@@ -49,6 +51,11 @@ class Paint(object):
         # Size Selection
         self.choose_size_button = Scale(self.tab1, from_=1, to=10, orient=HORIZONTAL)
         self.choose_size_button.pack(side=TOP,pady=50)
+
+        # Undo Selection
+        self.undo_button = Button(self.tab1,text ='undo', command = self.undo)
+        self.undo_button.pack(side=TOP, pady=50)
+
 
         # Save Button- CURRENTLY DOES NOTHING
         # TODO: fix save problem
@@ -101,6 +108,10 @@ class Paint(object):
         self.return_from_tool.pack(side=BOTTOM)
 
         ## Sets up GUI and checks for user input:
+        self.linelist = [self.c.create_line(0, 0, 0, 0,
+                                            width=0, fill='black',
+                                            capstyle=ROUND, smooth=TRUE, splinesteps=36)]
+
         self.setup()
         self.root.mainloop()
 
@@ -111,12 +122,17 @@ class Paint(object):
         self.color = self.DEFAULT_COLOR
         self.eraser_on = False
         self.active_button = self.pen_button
-        self.c.bind('<B1-Motion>', self.paint)
+        self.c.bind('<Motion>', self.paint)
         self.c.bind('<ButtonRelease-1>', self.reset)
+
 
     def choose_tool(self):
         """Moves to tab3 so that tool can be chosen"""
         self.tabControl.select(self.tab3)
+
+    def undo(self):
+        for k in range(len(self.linelist)):
+            self.c.delete(self.linelist[k])
 
     def use_pen(self):
         self.activate_button(self.pen_button)
@@ -150,9 +166,10 @@ class Paint(object):
         self.line_width = self.choose_size_button.get()
         paint_color = 'white' if self.eraser_on else self.color
         if self.old_x and self.old_y:
-            self.c.create_line(self.old_x, self.old_y, event.x, event.y,
+           newline =  self.c.create_line(self.old_x, self.old_y, event.x, event.y,
                                width=self.line_width, fill=paint_color,
                                capstyle=ROUND,smooth=TRUE, splinesteps=36)
+           self.linelist.append(newline)
         self.old_x = event.x
         self.old_y = event.y
 
@@ -219,4 +236,5 @@ class Paint(object):
 
 
 if __name__ == '__main__':
+
     Paint()
