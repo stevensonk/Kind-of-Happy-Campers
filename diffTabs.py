@@ -16,10 +16,21 @@ class Paint(object):
         # Create a notebook for different tabs
         self.tabControl = ttk.Notebook(self.root)
 
-        # Create Popup for naming
-        self.popup = Toplevel()
-        self.popup.wm_title("Name")
+        ## INITIALIZING POPUP WINDOW
+        self.popup = Toplevel() # Create Popup
+        self.popup.wm_title("Getting Started")
         self.popup.attributes("-topmost", True)
+        # DRAWING SIZE:
+        self.label3 = Label(self.popup, text="What would you like to make?")
+        self.label3.grid(row=0, column=0)
+        self.whole_page = Button(self.popup, text='Large Painting', command=self.wholePage, RELIEF=SUNKEN)
+        self.whole_page.grid(row=1, column=0)
+        self.bookmark_option = Button(self.popup, text='Bookmark', command=self.makeBookmark)
+        self.bookmark_option.grid(row=1, column=1)
+        self.postcard_option = Button(self.popup, text='Postcard', command=self.makePostcard)
+        self.postcard_option.grid(row=1, column=2)
+
+        # NAMING:
         self.label1 = Label(self.popup, text='Name Your File')
         self.label2 = Label(self.popup, text='Filename:')
         self.label1.grid(row=0, column=0)
@@ -31,6 +42,7 @@ class Paint(object):
         self.get_filename = Button(self.popup, text='Continue', command=self.get_name)
         self.get_filename.grid(row=2, column=0)
 
+        ## MAIN WINDOW:
         # Create two tabs:
         self.tab1 = ttk.Frame(self.tabControl)
         self.tab2 = ttk.Frame(self.tabControl)
