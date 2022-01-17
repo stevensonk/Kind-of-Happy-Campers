@@ -1,7 +1,8 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter.colorchooser import askcolor
-from PIL import ImageGrab
+# from PIL import ImageGrab
+# TODO: Save does not work on linux, change over to pyscreenshot library
 import time
 import threading
 
@@ -23,6 +24,9 @@ class Paint(object):
         self.root = Tk()
         self.root.wm_title('EyePaint')
         self.tabControl = ttk.Notebook(self.root)
+
+        # Escape Button Closes File
+        self.root.bind("<Escape>", exit)
 
         ## POPUP for Naming + Template Choice
         self.popup = Toplevel()
@@ -84,16 +88,16 @@ class Paint(object):
         self.eraser_button.pack(side=TOP,pady=10)
 
         # Size Selection
-        size_button_png = PhotoImage(file='size_button.png')
+        size_button_png = PhotoImage(file='size_button.PNG')
         self.choose_size_button = Button(self.tab1, image = size_button_png, height = 80, width = 80, command=self.choose_size)
         self.choose_size_button.pack(side=TOP,pady=10)
 
-        # Save Button
+        """# Save Button
         self.filename = StringVar()
         self.filename = 'filename'
         save_button_png = PhotoImage(file='save_button.png')
         self.save_button = Button(self.tab1, image = save_button_png, height = 80, width = 80, command=self.snapsave)
-        self.save_button.pack(side=TOP,pady=10)
+        self.save_button.pack(side=TOP,pady=10)"""
 
         # Undo Button
         undo_button_png = PhotoImage(file='undo_button.png')
@@ -148,27 +152,27 @@ class Paint(object):
 
         ##TAB 4: SIZE
         # TODO: Add more sizes
-        size1_png = PhotoImage(file='size_1.png')
+        size1_png = PhotoImage(file='size_1.PNG')
         self.first_size = Button(self.tab4, image = size1_png, height=200, width=200, command=self.size1)
         self.first_size.place(relx=0, rely=0,anchor=NW)
 
-        size2_png = PhotoImage(file='size_2.png')
+        size2_png = PhotoImage(file='size_2.PNG')
         self.second_size = Button(self.tab4, image = size2_png, height=200, width=200, command=self.size2)
         self.second_size.place(relx=.5, rely=0, anchor=N)
 
-        size3_png = PhotoImage(file='size_3.png')
+        size3_png = PhotoImage(file='size_3.PNG')
         self.third_size = Button(self.tab4, image = size3_png,height=200, width=200, command=self.size3)
         self.third_size.place(relx=1.0, rely=0,anchor=NE)
 
-        size4_png = PhotoImage(file='size_4.png')
+        size4_png = PhotoImage(file='size_4.PNG')
         self.fourth_size = Button(self.tab4, image = size4_png, height=200, width=200, command=self.size4)
         self.fourth_size.place(relx=0, rely=.5,anchor=W)
 
-        size5_png = PhotoImage(file='size_5.png')
+        size5_png = PhotoImage(file='size_5.PNG')
         self.fifth_size = Button(self.tab4, image = size5_png, height=200, width=200, command=self.size5)
         self.fifth_size.place(relx=.5, rely=.5,anchor=CENTER)
 
-        size6_png = PhotoImage(file='size_6.png')
+        size6_png = PhotoImage(file='size_6.PNG')
         self.sixth_size = Button(self.tab4, image = size6_png, height=200, width=200, command=self.size6)
         self.sixth_size.place(relx=1.0, rely=.5, anchor=E)
 
@@ -250,7 +254,6 @@ class Paint(object):
         canvas = self._canvas()  # Get Window Coordinates of Canvas
         savename = self.filename + '.jpg'
         self.grabcanvas = ImageGrab.grab(bbox=canvas).save(savename)
-        # TODO: save image name as something significant
         #print('Screencshot tkinter canvas and saved as "out_snapsave.jpg w/o displaying screenshoot."')
 
     def _canvas(self):
