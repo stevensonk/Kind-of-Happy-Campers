@@ -3,6 +3,7 @@ from tkinter import ttk
 from tkinter.colorchooser import askcolor
 from PIL import Image, ImageTk, ImageGrab
 import time
+import threading
 
 class Paint(object):
 
@@ -12,6 +13,9 @@ class Paint(object):
     def __init__(self):
         # Create a GUI and name it
         self.root = Tk()
+        # Start a timer. After ((45 minutes)) 15 seconds, a warning will be displayed
+        t = threading.Timer(15.0, self.warning)
+        t.start()
         #self.root.title = 'EyePaint'
         # Create a notebook for different tabs
         self.tabControl = ttk.Notebook(self.root)
@@ -20,27 +24,27 @@ class Paint(object):
         self.popup = Toplevel() # Create Popup
         self.popup.wm_title("Getting Started")
         self.popup.attributes("-topmost", True)
-        # DRAWING SIZE:
+        # TEMPLATES:
         self.label3 = Label(self.popup, text="What would you like to make?")
         self.label3.grid(row=0, column=0)
-        self.whole_page = Button(self.popup, text='Large Painting', command=self.wholePage, RELIEF=SUNKEN)
+        self.whole_page = Button(self.popup, text='Large Painting', command=self.wholePage, relief=SUNKEN)
         self.whole_page.grid(row=1, column=0)
+        self.currentChoice = self.whole_page
         self.bookmark_option = Button(self.popup, text='Bookmark', command=self.makeBookmark)
         self.bookmark_option.grid(row=1, column=1)
         self.postcard_option = Button(self.popup, text='Postcard', command=self.makePostcard)
-        self.postcard_option.grid(row=1, column=2)
-
+        self.postcard_option.grid(row=1, column=3)
         # NAMING:
         self.label1 = Label(self.popup, text='Name Your File')
         self.label2 = Label(self.popup, text='Filename:')
-        self.label1.grid(row=0, column=0)
-        self.label2.grid(row=1, column=0)
+        self.label1.grid(row=3, column=0)
+        self.label2.grid(row=4, column=0)
         self.filename = StringVar()
         self.filename = 'filename'
         self.ask_filename = Entry(self.popup, textvariable=self.filename)
-        self.ask_filename.grid(row=1, column=1)
+        self.ask_filename.grid(row=4, column=1)
         self.get_filename = Button(self.popup, text='Continue', command=self.get_name)
-        self.get_filename.grid(row=2, column=0)
+        self.get_filename.grid(row=5, column=1)
 
         ## MAIN WINDOW:
         # Create two tabs:
@@ -178,6 +182,46 @@ class Paint(object):
         savename = self.filename + ".jpg"
         print(savename)
         self.popup.destroy()
+        self.root.attributes("-topmost", True)
+
+    def makePostcard(self):
+        """Creates a postcard template"""
+        self.c.delete('all')
+        self.currentChoice.config(relief=RAISED)
+        self.postcard_option.config(relief=SUNKEN)
+        self.currentChoice = self.postcard_option
+        self.c.create_rectangle(50, 50, 550, 350)
+
+    def wholePage(self):
+        """Clears the page so that the user can draw on the whole page"""
+        self.c.delete('all')
+        self.currentChoice.config(relief=RAISED)
+        self.whole_page.config(relief=SUNKEN)
+        self.currentChoice = self.whole_page
+
+    def makeBookmark(self):
+        """Draws a bookmark template"""
+        self.c.delete('all')
+        self.currentChoice.config(relief=RAISED)
+        self.bookmark_option.config(relief=SUNKEN)
+        self.currentChoice = self.bookmark_option
+        self.c.create_rectangle(250,50,450,550)
+        self.c.create_oval(330,60,370,100)
+
+    def warning(self):
+        """Display warning when the user has been working for 45 minutes to warn against overuse"""
+        self.display_warning = Toplevel()
+        self.display_warning.wm_title("Time for a break?")
+        self.display_warning.attributes("-topmost", True)
+        self.warningLabel = Label(self.display_warning, text="You have been working for 45 minutes")
+        self.warningLabel.grid(row=0, column=0)
+        self.continue_from_warning = Button(self.display_warning, text="Conitnue", command=self.closeWarning)
+        self.continue_from_warning.grid(row=1, column=0)
+
+    def closeWarning(self):
+        """Close the warning box, move main canvas to foreground"""
+        self.display_warning.destroy()
+        self.root.attributes("-topmost", True)
 
 
 if __name__ == '__main__':

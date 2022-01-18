@@ -1,14 +1,14 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter.colorchooser import askcolor
-from PIL import ImageGrab
+# from PIL import ImageGrab
+# TODO: Save does not work on linux, change over to pyscreenshot library
+import time
+import threading
 
 """ TODO:
-        Make all buttons bigger (especially in drawing tab) - Carla
         Create different tools - Veronica
-        Placement of buttons (especially in colors, thickness tabs) - Carla
         Switching between drawing and selection modes (i.e. when pressing space bar) - All
-        Different Canvas sizes - Keely
         """
 
 class Paint(object):
@@ -17,25 +17,43 @@ class Paint(object):
     DEFAULT_COLOR = 'black'
 
     def __init__(self):
+        # Start timer:
+        t = threading.Timer(2700.0, self.warning) # Displays warning after 45 minutes
+        t.start()
+        # Start GUI:
         self.root = Tk()
-        #self.root.title = 'EyePaint'
+        self.root.wm_title('EyePaint')
         self.tabControl = ttk.Notebook(self.root)
 
-        # Create Popup for naming:
+        # Escape Button Closes File
+        self.root.bind("<Escape>", exit)
+
+        ## POPUP for Naming + Template Choice
         self.popup = Toplevel()
         self.popup.wm_title("Name")
         self.popup.attributes("-topmost", True) # New window will be at the foreground
+        # Templates:
+        self.label3 = Label(self.popup, text="What would you like to make?")
+        self.label3.grid(row=0, column=0)
+        self.whole_page = Button(self.popup, text='Large Painting', command=self.wholePage, relief=SUNKEN)
+        self.whole_page.grid(row=1, column=0)
+        self.currentChoice = self.whole_page
+        self.bookmark_option = Button(self.popup, text='Bookmark', command=self.makeBookmark)
+        self.bookmark_option.grid(row=1, column=1)
+        self.postcard_option = Button(self.popup, text='Postcard', command=self.makePostcard)
+        self.postcard_option.grid(row=1, column=3)
+        # Naming:
         self.label1 = Label(self.popup, text='Name Your File')
         self.label2 = Label(self.popup, text='Filename:')
-        self.label1.grid(row=0, column=0)
-        self.label2.grid(row=1, column=0)
+        self.label1.grid(row=3, column=0)
+        self.label2.grid(row=4, column=0)
         self.filename = StringVar() # Creates variable for the file name to be stored
         self.filename = 'filename'
         self.ask_filename = Entry(self.popup, textvariable=self.filename) # Entry box for name to be typed
         self.ask_filename.insert(0, "filename") # Default for the name of the file is "filename.jpg"
-        self.ask_filename.grid(row=1, column=1)
+        self.ask_filename.grid(row=4, column=1)
         self.get_filename = Button(self.popup, text='Continue', command=self.get_name) # Press Button to continue
-        self.get_filename.grid(row=2, column=0)
+        self.get_filename.grid(row=5, column=0)
 
         # Create new tabs:
         self.tab1 = ttk.Frame(self.tabControl)  # Tab 1, for Drawing (main screen)
@@ -70,16 +88,16 @@ class Paint(object):
         self.eraser_button.pack(side=TOP,pady=10)
 
         # Size Selection
-        size_button_png = PhotoImage(file='size_button.png')
+        size_button_png = PhotoImage(file='size_button.PNG')
         self.choose_size_button = Button(self.tab1, image = size_button_png, height = 80, width = 80, command=self.choose_size)
         self.choose_size_button.pack(side=TOP,pady=10)
 
-        # Save Button
+        """# Save Button
         self.filename = StringVar()
         self.filename = 'filename'
         save_button_png = PhotoImage(file='save_button.png')
         self.save_button = Button(self.tab1, image = save_button_png, height = 80, width = 80, command=self.snapsave)
-        self.save_button.pack(side=TOP,pady=10)
+        self.save_button.pack(side=TOP,pady=10)"""
 
         # Undo Button
         undo_button_png = PhotoImage(file='undo_button.png')
@@ -87,7 +105,6 @@ class Paint(object):
         self.undo_button.pack(side=TOP,pady=10)
 
         ## TAB 2: COLORS
-        # TODO: Add more colors
         self.redColor = Button(self.tab2, text='red', bg='red', width=30, height=10, command=self.colorRed)
         self.redColor.place(relx=0, rely=0,anchor=NW)
 
@@ -106,10 +123,11 @@ class Paint(object):
         self.purpleColor = Button(self.tab2, text='purple', bg='purple', width=30, height=10, command=self.colorPurple)
         self.purpleColor.place(relx=1.0, rely=.4,anchor=E)
 
-        self.blackColor = Button(self.tab2, text='black', bg='black', fg='white', width=30, height=10, command=self.colorBlack)
+        self.blackColor = Button(self.tab2, text='black', bg='black', fg='white', width=30, height=10, command=self.colorBlack, relief=SUNKEN)
         self.blackColor.place(relx=0, rely=.8,anchor=SW)
+        self.currentColor = self.blackColor
 
-        self.greyColor = Button(self.tab2, text='grey', bg='grey', width=30, height=10, command=self.colorBlack)
+        self.greyColor = Button(self.tab2, text='grey', bg='grey', width=30, height=10, command=self.colorGrey)
         self.greyColor.place(relx=.5, rely=.8,anchor=S)
 
         self.brownColor = Button(self.tab2, text='brown', bg='brown', width=30, height=10, command=self.colorBrown)
@@ -134,34 +152,33 @@ class Paint(object):
 
         ##TAB 4: SIZE
         # TODO: Add more sizes
-        size1_png = PhotoImage(file='size_1.png')
+        size1_png = PhotoImage(file='size_1.PNG')
         self.first_size = Button(self.tab4, image = size1_png, height=200, width=200, command=self.size1)
         self.first_size.place(relx=0, rely=0,anchor=NW)
 
-        size2_png = PhotoImage(file='size_2.png')
+        size2_png = PhotoImage(file='size_2.PNG')
         self.second_size = Button(self.tab4, image = size2_png, height=200, width=200, command=self.size2)
         self.second_size.place(relx=.5, rely=0, anchor=N)
 
-        size3_png = PhotoImage(file='size_3.png')
+        size3_png = PhotoImage(file='size_3.PNG')
         self.third_size = Button(self.tab4, image = size3_png,height=200, width=200, command=self.size3)
         self.third_size.place(relx=1.0, rely=0,anchor=NE)
 
-        size4_png = PhotoImage(file='size_4.png')
+        size4_png = PhotoImage(file='size_4.PNG')
         self.fourth_size = Button(self.tab4, image = size4_png, height=200, width=200, command=self.size4)
         self.fourth_size.place(relx=0, rely=.5,anchor=W)
 
-        size5_png = PhotoImage(file='size_5.png')
+        size5_png = PhotoImage(file='size_5.PNG')
         self.fifth_size = Button(self.tab4, image = size5_png, height=200, width=200, command=self.size5)
         self.fifth_size.place(relx=.5, rely=.5,anchor=CENTER)
 
-        size6_png = PhotoImage(file='size_6.png')
+        size6_png = PhotoImage(file='size_6.PNG')
         self.sixth_size = Button(self.tab4, image = size6_png, height=200, width=200, command=self.size6)
         self.sixth_size.place(relx=1.0, rely=.5, anchor=E)
 
         # Adds button on tab4 to return to drawing (tab1)
         self.return_from_size = Button(self.tab4, image=return_button_png, height=125, width=125,command=self.return_to_drawing)
         self.return_from_size.pack(side=BOTTOM)
-
 
         ## Sets up GUI and checks for user input:
         self.linelist = [self.c.create_line(0,0,0,0, width = 0, fill ='black',capstyle = ROUND, smooth=TRUE, splinesteps=36)]
@@ -186,9 +203,6 @@ class Paint(object):
 
     def use_pen(self):
         self.activate_button(self.pen_button)
-
-    #def switch_tab(self):
-    #    self.tabControl.select(self.tab2)
 
     def return_to_drawing(self):
         """ Returns to tab1"""
@@ -231,10 +245,6 @@ class Paint(object):
         self.old_x = event.x
         self.old_y = event.y
 
-
-
-
-
     def reset(self, event):
         self.old_x, self.old_y = None, None
 
@@ -244,7 +254,6 @@ class Paint(object):
         canvas = self._canvas()  # Get Window Coordinates of Canvas
         savename = self.filename + '.jpg'
         self.grabcanvas = ImageGrab.grab(bbox=canvas).save(savename)
-        # TODO: save image name as something significant
         #print('Screencshot tkinter canvas and saved as "out_snapsave.jpg w/o displaying screenshoot."')
 
     def _canvas(self):
@@ -265,39 +274,62 @@ class Paint(object):
         savename = self.filename + ".jpg"
         #print(savename)
         self.popup.destroy()
+        self.root.attributes("-topmost", True)
 
     ## COLOR FUNCTIONS:
     def colorRed(self):
         self.color='red'
+        self.currentColor.config(relief=RAISED)
         self.redColor.config(relief=SUNKEN)
+        self.currentColor = self.redColor
 
     def colorBlue(self):
         self.color='blue'
+        self.currentColor.config(relief=RAISED)
         self.blueColor.config(relief=SUNKEN)
+        self.currentColor = self.blueColor
 
     def colorYellow(self):
         self.color='yellow'
+        self.currentColor.config(relief=RAISED)
         self.yellowColor.config(relief=SUNKEN)
+        self.currentColor = self.yellowColor
 
     def colorGreen(self):
         self.color='green'
+        self.currentColor.config(relief=RAISED)
         self.greenColor.config(relief=SUNKEN)
+        self.currentColor = self.greenColor
 
     def colorOrange(self):
         self.color='orange'
+        self.currentColor.config(relief=RAISED)
         self.orangeColor.config(relief=SUNKEN)
+        self.currentColor = self.orangeColor
 
     def colorPurple(self):
         self.color='purple'
+        self.currentColor.config(relief=RAISED)
         self.purpleColor.config(relief=SUNKEN)
+        self.currentColor = self.purpleColor
 
     def colorBlack(self):
         self.color='black'
+        self.currentColor.config(relief=RAISED)
         self.blackColor.config(relief=SUNKEN)
+        self.currentColor = self.blackColor
 
     def colorBrown(self):
         self.color='brown'
+        self.currentColor.config(relief=RAISED)
         self.brownColor.config(relief=SUNKEN)
+        self.currentColor = self.brownColor
+
+    def colorGrey(self):
+        self.color='grey'
+        self.currentColor.config(relief=RAISED)
+        self.greyColor.config(relief=SUNKEN)
+        self.currentColor = self.greyColor
 
     ## SIZE FUNCTIONS
     def size1(self):
@@ -323,6 +355,47 @@ class Paint(object):
     def size6(self):
         self.line_width = 21
         self.sixth_size.config(relief=SUNKEN)
+
+    ## TEMPLATE FUNCTIONS:
+    def makePostcard(self):
+        """Creates a postcard template"""
+        self.c.delete('all')
+        self.currentChoice.config(relief=RAISED)
+        self.postcard_option.config(relief=SUNKEN)
+        self.currentChoice = self.postcard_option
+        self.c.create_rectangle(50, 50, 550, 350)
+
+    def wholePage(self):
+        """Clears the page so that the user can draw on the whole page"""
+        self.c.delete('all')
+        self.currentChoice.config(relief=RAISED)
+        self.whole_page.config(relief=SUNKEN)
+        self.currentChoice = self.whole_page
+
+    def makeBookmark(self):
+        """Draws a bookmark template"""
+        self.c.delete('all')
+        self.currentChoice.config(relief=RAISED)
+        self.bookmark_option.config(relief=SUNKEN)
+        self.currentChoice = self.bookmark_option
+        self.c.create_rectangle(250,50,450,550)
+        self.c.create_oval(330,60,370,100)
+
+    ## WARNING FUNCTIONS:
+    def warning(self):
+        """Display warning when the user has been working for 45 minutes to warn against overuse"""
+        self.display_warning = Toplevel()
+        self.display_warning.wm_title("Time for a break?")
+        self.display_warning.attributes("-topmost", True)
+        self.warningLabel = Label(self.display_warning, text="You have been working for 45 minutes")
+        self.warningLabel.grid(row=0, column=0)
+        self.continue_from_warning = Button(self.display_warning, text="Conitnue", command=self.closeWarning)
+        self.continue_from_warning.grid(row=1, column=0)
+
+    def closeWarning(self):
+        """Close the warning box, move main canvas to foreground"""
+        self.display_warning.destroy()
+        self.root.attributes("-topmost", True)
 
 if __name__ == '__main__':
     Paint()
