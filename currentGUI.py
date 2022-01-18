@@ -74,64 +74,64 @@ class Paint(object):
 
         # Button on tab1 that moves to tab2 so that COLOR can be selected
         color_button_png = PhotoImage(file='color_button.png')
-        self.color_button = Button(self.tab1, image = color_button_png, height = 80, width = 80, command=self.choose_color)
+        self.color_button = Button(self.tab1, image = color_button_png, height = 100, width = 120, command=self.choose_color)
         self.color_button.pack(side=TOP, pady=10)
 
         # Button on tab1 that moves to tab 3 so that TOOL can be selected
         tool_button_png = PhotoImage(file='art_tools_button.png')
-        self.tool_button = Button(self.tab1, image = tool_button_png, height = 80, width = 80, command=self.choose_tool)
+        self.tool_button = Button(self.tab1, image = tool_button_png, height = 100, width = 120, command=self.choose_tool)
         self.tool_button.pack(side=TOP, pady=10)
 
         # Eraser Button
         eraser_button_png = PhotoImage(file='eraser_button.png')
-        self.eraser_button = Button(self.tab1, image = eraser_button_png, height = 80, width = 80, command=self.use_eraser)
+        self.eraser_button = Button(self.tab1, image = eraser_button_png, height = 100, width = 120, command=self.use_eraser)
         self.eraser_button.pack(side=TOP,pady=10)
 
         # Size Selection
         size_button_png = PhotoImage(file='size_button.PNG')
-        self.choose_size_button = Button(self.tab1, image = size_button_png, height = 80, width = 80, command=self.choose_size)
+        self.choose_size_button = Button(self.tab1, image = size_button_png, height = 100, width = 120, command=self.choose_size)
         self.choose_size_button.pack(side=TOP,pady=10)
 
-        """# Save Button
+        # Save Button
         self.filename = StringVar()
         self.filename = 'filename'
         save_button_png = PhotoImage(file='save_button.png')
-        self.save_button = Button(self.tab1, image = save_button_png, height = 80, width = 80, command=self.snapsave)
-        self.save_button.pack(side=TOP,pady=10)"""
+        self.save_button = Button(self.tab1, image = save_button_png, height = 100, width = 120, command=self.snapsave)
+        self.save_button.pack(side=TOP,pady=10)
 
         # Undo Button
         undo_button_png = PhotoImage(file='undo_button.png')
-        self.undo_button = Button(self.tab1, image = undo_button_png, height = 80, width = 80, command = self.undo)
+        self.undo_button = Button(self.tab1, image = undo_button_png, height = 100, width = 120, command = self.undo)
         self.undo_button.pack(side=TOP,pady=10)
 
         ## TAB 2: COLORS
         self.redColor = Button(self.tab2, text='red', bg='red', width=30, height=10, command=self.colorRed)
-        self.redColor.place(relx=0, rely=0,anchor=NW)
+        self.redColor.place(relx=0.25, rely=0,anchor=NW)
 
         self.blueColor = Button(self.tab2, text='blue', bg='blue', width=30, height=10, command=self.colorBlue)
         self.blueColor.place(relx=.5, rely=0,anchor=N)
 
         self.yellowColor = Button(self.tab2, text='yellow', bg='yellow', width=30, height=10, command=self.colorYellow)
-        self.yellowColor.place(relx=1.0, rely=0,anchor=NE)
+        self.yellowColor.place(relx=0.75, rely=0,anchor=NE)
 
         self.greenColor = Button(self.tab2, text='green', bg='green', width=30, height=10, command=self.colorGreen)
-        self.greenColor.place(relx=0, rely=.4,anchor=W)
+        self.greenColor.place(relx=0.25, rely=.4,anchor=W)
 
         self.orangeColor = Button(self.tab2, text='orange', bg='orange', width=30, height=10, command=self.colorOrange)
         self.orangeColor.place(relx=.50, rely=.4,anchor=CENTER)
 
         self.purpleColor = Button(self.tab2, text='purple', bg='purple', width=30, height=10, command=self.colorPurple)
-        self.purpleColor.place(relx=1.0, rely=.4,anchor=E)
+        self.purpleColor.place(relx=0.75, rely=.4,anchor=E)
 
         self.blackColor = Button(self.tab2, text='black', bg='black', fg='white', width=30, height=10, command=self.colorBlack, relief=SUNKEN)
-        self.blackColor.place(relx=0, rely=.8,anchor=SW)
+        self.blackColor.place(relx=0.25, rely=.8,anchor=SW)
         self.currentColor = self.blackColor
 
         self.greyColor = Button(self.tab2, text='grey', bg='grey', width=30, height=10, command=self.colorGrey)
         self.greyColor.place(relx=.5, rely=.8,anchor=S)
 
         self.brownColor = Button(self.tab2, text='brown', bg='brown', width=30, height=10, command=self.colorBrown)
-        self.brownColor.place(relx=1.0, rely=.8,anchor=SE)
+        self.brownColor.place(relx=0.75, rely=.8,anchor=SE)
 
         # Adds button on tab2 to return to drawing (tab1)
         return_button_png = PhotoImage(file='return_button.png')
@@ -154,7 +154,7 @@ class Paint(object):
         # TODO: Add more sizes
         size1_png = PhotoImage(file='size_1.PNG')
         self.first_size = Button(self.tab4, image = size1_png, height=200, width=200, command=self.size1)
-        self.first_size.place(relx=0, rely=0,anchor=NW)
+        self.first_size.place(relx=0.25, rely=0,anchor=NW)
 
         size2_png = PhotoImage(file='size_2.PNG')
         self.second_size = Button(self.tab4, image = size2_png, height=200, width=200, command=self.size2)
@@ -162,11 +162,11 @@ class Paint(object):
 
         size3_png = PhotoImage(file='size_3.PNG')
         self.third_size = Button(self.tab4, image = size3_png,height=200, width=200, command=self.size3)
-        self.third_size.place(relx=1.0, rely=0,anchor=NE)
+        self.third_size.place(relx=0.75, rely=0,anchor=NE)
 
         size4_png = PhotoImage(file='size_4.PNG')
         self.fourth_size = Button(self.tab4, image = size4_png, height=200, width=200, command=self.size4)
-        self.fourth_size.place(relx=0, rely=.5,anchor=W)
+        self.fourth_size.place(relx=0.25, rely=.5,anchor=W)
 
         size5_png = PhotoImage(file='size_5.PNG')
         self.fifth_size = Button(self.tab4, image = size5_png, height=200, width=200, command=self.size5)
@@ -174,7 +174,7 @@ class Paint(object):
 
         size6_png = PhotoImage(file='size_6.PNG')
         self.sixth_size = Button(self.tab4, image = size6_png, height=200, width=200, command=self.size6)
-        self.sixth_size.place(relx=1.0, rely=.5, anchor=E)
+        self.sixth_size.place(relx=0.75, rely=.5, anchor=E)
 
         # Adds button on tab4 to return to drawing (tab1)
         self.return_from_size = Button(self.tab4, image=return_button_png, height=125, width=125,command=self.return_to_drawing)
