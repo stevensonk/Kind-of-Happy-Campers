@@ -1,14 +1,13 @@
 from tkinter import *
 from tkinter import ttk
-from tkinter.colorchooser import askcolor
-# from PIL import ImageGrab
-# TODO: Save does not work on linux, change over to pyscreenshot library
-import time
+from PIL import ImageGrab
 import threading
 
 """ TODO:
-        Create different tools - Veronica
-        Switching between drawing and selection modes (i.e. when pressing space bar) - All
+        Create different tools/Shape options
+        Fix Brown Color
+        Text-to-speech
+        Finish Undo Button
         """
 
 class Paint(object):
@@ -22,7 +21,8 @@ class Paint(object):
         t.start()
         # Start GUI:
         self.root = Tk()
-        self.root.wm_title('EyePaint')
+        #self.root.attributes("-fullscreen", True) # This command does not work on our computers
+        self.root.wm_title('DArt')
         self.tabControl = ttk.Notebook(self.root)
 
         # Escape Button Closes File
@@ -104,6 +104,10 @@ class Paint(object):
         self.undo_button = Button(self.tab1, image = undo_button_png, height = 100, width = 120, command = self.undo)
         self.undo_button.pack(side=TOP,pady=10)
 
+        # Quit Button
+        self.close_window = Button(self.tab1, text="Quit")
+        self.close_window.pack(side=TOP,pady=20)
+
         ## TAB 2: COLORS
         self.redColor = Button(self.tab2, text='red', bg='red', width=30, height=10, command=self.colorRed)
         self.redColor.place(relx=0.25, rely=0,anchor=NW)
@@ -139,7 +143,6 @@ class Paint(object):
         self.return_from_color.pack(side=BOTTOM)
 
         ## TAB 3: TOOLS - TOOLS CURRENTLY ARE NOT DIFFERENT
-        # TODO: Make tools look different
         self.pen_button = Button(self.tab3, text='pen', command=self.use_pen)
         self.pen_button.pack(side=TOP, padx=1)
 
@@ -151,10 +154,10 @@ class Paint(object):
         self.return_from_tool.pack(side=BOTTOM)
 
         ##TAB 4: SIZE
-        # TODO: Add more sizes
         size1_png = PhotoImage(file='size_1.PNG')
         self.first_size = Button(self.tab4, image = size1_png, height=200, width=200, command=self.size1)
         self.first_size.place(relx=0.25, rely=0,anchor=NW)
+        self.currentSize = self.first_size
 
         size2_png = PhotoImage(file='size_2.PNG')
         self.second_size = Button(self.tab4, image = size2_png, height=200, width=200, command=self.size2)
@@ -248,13 +251,23 @@ class Paint(object):
     def reset(self, event):
         self.old_x, self.old_y = None, None
 
+    """def closeWindow(self):
+        self.checkQuit = Toplevel()
+        self.checkQuit.wm_title("Are you sure you would like to quit?")
+        self.checkQuit.attributes("-topmost", True)
+        self.checking = Label(self.checkQuit, text="Are you sure you would like to quit?")
+        self.checking.grid(row=0, column=1)
+        self.yesQuit = Button(self.checkQuit, text="Yes", command = exit)
+        self.yesQuit.grid(row=1,column=0)
+        self.dontQuit = Button(self.checkQuit, text="No", command = self.checkQuit.destroy)
+        self.dontQuit.grid(row=1,column=2)"""
+
     ## SAVING:
     def snapsave(self):
-        #print('n def _snapsaveCanvas(self):')
+        """Takes a screenshot and saves as .jpg file with previously chosen name"""
         canvas = self._canvas()  # Get Window Coordinates of Canvas
         savename = self.filename + '.jpg'
         self.grabcanvas = ImageGrab.grab(bbox=canvas).save(savename)
-        #print('Screencshot tkinter canvas and saved as "out_snapsave.jpg w/o displaying screenshoot."')
 
     def _canvas(self):
         """Returns box which encompases canvas"""
@@ -270,93 +283,118 @@ class Paint(object):
         """ Takes the text in the ask_filename entry widget in the starting popup window and names it to the filename
             variable. Destroys the popup window so that the user can now draw."""
         self.filename = self.ask_filename.get()
-        #print(self.filename)
         savename = self.filename + ".jpg"
-        #print(savename)
         self.popup.destroy()
         self.root.attributes("-topmost", True)
 
-    ## COLOR FUNCTIONS:
+    ## COLOR FUNCTIONS: Change pen color
     def colorRed(self):
         self.color='red'
         self.currentColor.config(relief=RAISED)
         self.redColor.config(relief=SUNKEN)
         self.currentColor = self.redColor
+        self.return_to_drawing()
 
     def colorBlue(self):
         self.color='blue'
         self.currentColor.config(relief=RAISED)
         self.blueColor.config(relief=SUNKEN)
         self.currentColor = self.blueColor
+        self.return_to_drawing()
 
     def colorYellow(self):
         self.color='yellow'
         self.currentColor.config(relief=RAISED)
         self.yellowColor.config(relief=SUNKEN)
         self.currentColor = self.yellowColor
+        self.return_to_drawing()
 
     def colorGreen(self):
         self.color='green'
         self.currentColor.config(relief=RAISED)
         self.greenColor.config(relief=SUNKEN)
         self.currentColor = self.greenColor
+        self.return_to_drawing()
 
     def colorOrange(self):
         self.color='orange'
         self.currentColor.config(relief=RAISED)
         self.orangeColor.config(relief=SUNKEN)
         self.currentColor = self.orangeColor
+        self.return_to_drawing()
 
     def colorPurple(self):
         self.color='purple'
         self.currentColor.config(relief=RAISED)
         self.purpleColor.config(relief=SUNKEN)
         self.currentColor = self.purpleColor
+        self.return_to_drawing()
 
     def colorBlack(self):
         self.color='black'
         self.currentColor.config(relief=RAISED)
         self.blackColor.config(relief=SUNKEN)
         self.currentColor = self.blackColor
+        self.return_to_drawing()
 
     def colorBrown(self):
         self.color='brown'
         self.currentColor.config(relief=RAISED)
         self.brownColor.config(relief=SUNKEN)
         self.currentColor = self.brownColor
+        self.return_to_drawing()
 
     def colorGrey(self):
         self.color='grey'
         self.currentColor.config(relief=RAISED)
         self.greyColor.config(relief=SUNKEN)
         self.currentColor = self.greyColor
+        self.return_to_drawing()
 
-    ## SIZE FUNCTIONS
+    ## SIZE FUNCTIONS: Change pen width
     def size1(self):
         self.line_width = 3
+        self.currentSize.config(relief=RAISED)
         self.first_size.config(relief=SUNKEN)
+        self.currentSize = self.first_size
+        self.return_to_drawing()
 
     def size2(self):
         self.line_width = 6
+        self.currentSize.config(relief=RAISED)
         self.second_size.config(relief=SUNKEN)
+        self.currentSize = self.second_size
+        self.return_to_drawing()
 
     def size3(self):
         self.line_width = 9
+        self.currentSize.config(relief=RAISED)
         self.third_size.config(relief=SUNKEN)
+        self.currentSize = self.third_size
+        self.return_to_drawing()
 
     def size4(self):
         self.line_width = 12
+        self.currentSize.config(relief=RAISED)
         self.fourth_size.config(relief=SUNKEN)
+        self.currentSize = self.fourth_size
+        self.return_to_drawing()
 
     def size5(self):
         self.line_width = 15
+        self.currentSize.config(relief=RAISED)
         self.fifth_size.config(relief=SUNKEN)
+        self.currentSize = self.fifth_size
+        self.return_to_drawing()
 
     def size6(self):
         self.line_width = 21
+        self.currentSize.config(relief=RAISED)
         self.sixth_size.config(relief=SUNKEN)
+        self.currentSize = self.sixth_size
+        self.return_to_drawing()
 
-    ## TEMPLATE FUNCTIONS:
+    ## TEMPLATE FUNCTIONS: Add or remove template from canvas
     def makePostcard(self):
         """Creates a postcard template"""
         self.c.delete('all')
