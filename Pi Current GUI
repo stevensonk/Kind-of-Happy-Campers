@@ -75,7 +75,7 @@ class Paint(object):
 
         ## TAB 1: DRAWING
         # The canvas for drawing:
-        self.c = Canvas(self.tab1, bg='white', width=1600, height=900)
+        self.c = Canvas(self.tab1, bg='white', width=600, height=600)
         self.c.pack(side = LEFT, fill=BOTH, expand=1)
 
         # Button on tab1 that moves to tab2 so that COLOR can be selected
