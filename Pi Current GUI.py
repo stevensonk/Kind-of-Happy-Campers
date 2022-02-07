@@ -162,14 +162,17 @@ class Paint(object):
         self.pen_button = Button(self.tab3, text='pen', command=self.use_pen)
         self.pen_button.pack(side=TOP, padx=1)
 
-        self.circle_button = Button(self.tab3, text='circle', command=self.use_circle)
-        self.circle_button.pack(side=TOP, padx=2)
+        circle_png = PhotoImage(file = 'circle.PNG')
+        self.circle_button = Button(self.tab3, image = circle_png, height = 200, width = 250, command=self.use_circle)
+        self.circle_button.place(relx = 0.25, rely = 0.5, anchor=W)
 
-        self.triangle_button = Button(self.tab3, text='triangle', command=self.use_triangle)
-        self.triangle_button.pack(side=TOP, padx=3)
+        triangle_png = PhotoImage(file = 'triangle.PNG')
+        self.triangle_button = Button(self.tab3, image = triangle_png, height = 200, width = 250, command=self.use_triangle)
+        self.triangle_button.place(relx = 0.5, rely = 0.5, anchor = CENTER)
 
-        self.rectangle_button = Button(self.tab3, text='rectangle', command=self.use_rectangle)
-        self.rectangle_button.pack(side=TOP, padx=4)
+        square_png = PhotoImage(file = 'square.PNG')
+        self.rectangle_button = Button(self.tab3, image = square_png, height = 200, width = 250, command=self.use_rectangle)
+        self.rectangle_button.pack(relx = 0.75, rely = 0.5, anchor = E)
 
         # Adds button on tab3 to return to drawing (tab1)
         self.return_from_tool = Button(self.tab3, image=return_button_png, height=125, width=125, command=self.return_to_drawing)
