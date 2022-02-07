@@ -34,6 +34,8 @@ class Paint(object):
         # Start GUI:
         self.root = Tk()
         #self.root.attributes("-fullscreen", True)
+        w,h=self.root.winfo_screenwidth(),self.root.winfo_screenheight()
+        self.root.geometry("%dx%d+0+0" % (w,h))
         self.root.wm_title('DArt')
         self.tabControl = ttk.Notebook(self.root)
 
