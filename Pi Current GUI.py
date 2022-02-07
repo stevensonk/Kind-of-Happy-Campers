@@ -84,22 +84,22 @@ class Paint(object):
         self.c = Canvas(self.tab1, bg='white', width=600, height=600)
         self.c.pack(side = LEFT, fill=BOTH, expand=1)
 
-        # Button on tab1 that moves to tab2 so that COLOR can be selected
+        # Color Button
         color_button_png = PhotoImage(file='color_button.png')
         self.color_button = Button(self.tab1, image = color_button_png, height = 100, width = 150, command=self.choose_color)
         self.color_button.pack(side=TOP, pady=20)
 
-        # Button on tab1 that moves to tab 3 so that TOOL can be selected
-        tool_button_png = PhotoImage(file='art_tools_button.png')
-        self.tool_button = Button(self.tab1, image = tool_button_png, height = 100, width = 150, command=self.choose_tool)
-        self.tool_button.pack(side=TOP, pady=20)
+        # Shape Button
+        shape_button_png = PhotoImage(file='shape_button.png')
+        self.shape_button = Button(self.tab1, image = shape_button_png, height = 100, width = 150, command=self.choose_tool)
+        self.shape_button.pack(side=TOP, pady=20)
 
         # Eraser Button
         eraser_button_png = PhotoImage(file='eraser_button.png')
         self.eraser_button = Button(self.tab1, image = eraser_button_png, height = 100, width = 150, command=self.use_eraser)
         self.eraser_button.pack(side=TOP,pady=20)
 
-        # Size Selection
+        # Size Button
         size_button_png = PhotoImage(file='size_button.PNG')
         self.choose_size_button = Button(self.tab1, image = size_button_png, height = 100, width = 150, command=self.choose_size)
         self.choose_size_button.pack(side=TOP,pady=20)
