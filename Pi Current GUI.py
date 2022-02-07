@@ -7,14 +7,14 @@ import RPi.GPIO as GPIO
 import signal
 import sys
 
-global globalLineList
+
 global paint_on
 paint_on = False
+
 """ TODO:
-        Create different tools/Shape Options
-        Fix Brown Color
+        Fullscreen/spacing issue
+        Images for buttons
         Text-to-speech
-        Finish Undo Button
         """
 
 class Paint(object):
@@ -27,7 +27,7 @@ class Paint(object):
         #Shape
         self.currentShape = None
         self.toDelete = True
-        
+
         # Start timer:
         t = threading.Timer(2700.0, self.warning) # Displays warning after 45 minutes
         t.start()
@@ -148,7 +148,7 @@ class Paint(object):
         self.greyColor = Button(self.tab2, text='grey', bg='grey', width=30, height=10, command=self.colorGrey)
         self.greyColor.place(relx=.5, rely=.8,anchor=S)
 
-        self.brownColor = Button(self.tab2, text='brown', bg='brown', width=30, height=10, command=self.colorBrown)
+        self.brownColor = Button(self.tab2, text='brown', bg="#4E2C04", width=30, height=10, command=self.colorBrown)
         self.brownColor.place(relx=0.75, rely=.8,anchor=SE)
 
         # Adds button on tab2 to return to drawing (tab1)
@@ -157,6 +157,8 @@ class Paint(object):
         self.return_from_color.pack(side=BOTTOM)
 
         ## TAB 3: TOOLS - TOOLS CURRENTLY ARE NOT DIFFERENT
+        self.lastGUIButtonShape = False
+        
         self.pen_button = Button(self.tab3, text='pen', command=self.use_pen)
         self.pen_button.pack(side=TOP, padx=1)
 
@@ -205,7 +207,6 @@ class Paint(object):
 
         ## Sets up GUI and checks for user input:
         self.linelist = [self.c.create_line(0,0,0,0, width = 0, fill ='black',capstyle = ROUND, smooth=TRUE, splinesteps=36)]
-        globalLineList = [self.c.create_line(0,0,0,0, width = 0, fill ='black',capstyle = ROUND, smooth=TRUE, splinesteps=36)]
         self.setup()
         self.root.mainloop()
 
@@ -239,6 +240,7 @@ class Paint(object):
                                                tag="oval")
         self.tag = "oval"
         self.toDelete = False
+        self.lastGUIButtonShape=True
 
     def use_triangle(self):
         self.activate_button(self.triangle_button)
@@ -249,6 +251,7 @@ class Paint(object):
         self.tag = "triangle"
         self.toDelete = False
         print(self.c.type(self.currentShape))
+        self.lastGUIButtonShape=True
 
     def use_rectangle(self):
         self.activate_button(self.rectangle_button)
@@ -256,6 +259,7 @@ class Paint(object):
                                                     fill=self.color, tag="rectangle")
         self.tag = "rectangle"
         self.toDelete = False
+        self.lastGUIButtonShape=True
     def use_brush(self):
         self.activate_button(self.brush_button)
 
@@ -273,13 +277,13 @@ class Paint(object):
         self.tabControl.select(self.tab4)
 
     def undo(self):
-        global globalLineList
-        #for k in range(len(self.linelist)):
-        #    self.c.delete(self.linelist[k])
-        for k in range(len(globalLineList)):
-            self.c.delete(globalLineList[k])
-        self.c.delete(self.currentShape)
-        self.toDelete = False
+        if(self.lastGUIButtonShape ==False):
+            for k in range(len(self.linelist)):
+                self.c.delete(self.linelist[k])
+        else:
+            self.c.delete(self.currentShape)
+            self.toDelete = True
+        
     def activate_button(self, some_button, eraser_mode=False):
         self.active_button.config(relief=RAISED)
         some_button.config(relief=SUNKEN)
@@ -299,17 +303,18 @@ class Paint(object):
     def paint(self, event):
         #self.line_width = self.choose_size_button.get()
         global justPressed
-        global globalLineList
         if paint_on:
+            self.lastGUIButtonShape=False
             if justPressed:
                 paint_color = 'white' if self.eraser_on else self.color
+                self.linelist=[]
                 if self.old_x and self.old_y:
                     newline = self.c.create_line(event.x, event.y, event.x, event.y,
                         width=self.line_width, fill=paint_color,
                         capstyle=ROUND,smooth=TRUE, splinesteps=36)
-                    #self.linelist.append(newline)
-                    globalLineList.append(newline)
+                    self.linelist.append(newline)
                     
+
 
                 self.old_x = event.x
                 self.old_y = event.y
@@ -321,8 +326,10 @@ class Paint(object):
                                        width=self.line_width, fill=paint_color,
                                        capstyle=ROUND,smooth=TRUE, splinesteps=36)
                     self.linelist.append(newline)
+                    
                 self.old_x = event.x
                 self.old_y = event.y
+               
     def reset(self, event):
         self.old_x, self.old_y = None, None
 
@@ -401,7 +408,7 @@ class Paint(object):
         self.return_to_drawing()
 
     def colorBrown(self):
-        self.color='brown'
+        self.color="#4E2C04"
         self.currentColor.config(relief=RAISED)
         self.brownColor.config(relief=SUNKEN)
         self.currentColor = self.brownColor
@@ -528,16 +535,16 @@ def signal_handler(sig, frame):
 def button_pressed(channel):
     global x
     global paint_on
-    global globalLineList
     global justPressed
     if paint_on:
         paint_on=False
+        
 
 
     else:
         paint_on = True
         justPressed = True
-        globalLineList = []
+       
 
 
 
