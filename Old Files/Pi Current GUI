@@ -140,7 +140,7 @@ class Paint(object):
         self.greyColor = Button(self.tab2, text='grey', bg='grey', width=30, height=10, command=self.colorGrey)
         self.greyColor.place(relx=.5, rely=.8,anchor=S)
 
-        self.brownColor = Button(self.tab2, text='brown', bg='brown', width=30, height=10, command=self.colorBrown)
+        self.brownColor = Button(self.tab2, text='brown', bg='#4E2C04', width=30, height=10, command=self.colorBrown)
         self.brownColor.place(relx=0.75, rely=.8,anchor=SE)
 
         # Adds button on tab2 to return to drawing (tab1)
@@ -353,7 +353,7 @@ class Paint(object):
         self.return_to_drawing()
 
     def colorBrown(self):
-        self.color='brown'
+        self.color='#4E2C04'
         self.currentColor.config(relief=RAISED)
         self.brownColor.config(relief=SUNKEN)
         self.currentColor = self.brownColor

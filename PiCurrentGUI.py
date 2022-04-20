@@ -1,13 +1,20 @@
 from tkinter import *
 from tkinter import ttk
 from PIL import ImageGrab
+import time
 import threading
+import RPi.GPIO as GPIO
+import signal
+import sys
+
+
+global paint_on
+paint_on = False
 
 """ TODO:
-        Create different tools/Shape options
-        Fix Brown Color
+        Fullscreen/spacing issue
+        Images for buttons
         Text-to-speech
-        Finish Undo Button
         """
 
 class Paint(object):
@@ -16,12 +23,19 @@ class Paint(object):
     DEFAULT_COLOR = 'black'
 
     def __init__(self):
+        global globalLineList
+        #Shape
+        self.currentShape = None
+        self.toDelete = True
+
         # Start timer:
         t = threading.Timer(2700.0, self.warning) # Displays warning after 45 minutes
         t.start()
         # Start GUI:
         self.root = Tk()
-        #self.root.attributes("-fullscreen", True) # This command does not work on our computers
+        #self.root.attributes("-fullscreen", True)
+        w,h=self.root.winfo_screenwidth(),self.root.winfo_screenheight()
+        self.root.geometry("%dx%d+0+0" % (w,h))
         self.root.wm_title('DArt')
         self.tabControl = ttk.Notebook(self.root)
 
@@ -72,70 +86,72 @@ class Paint(object):
         self.c = Canvas(self.tab1, bg='white', width=600, height=600)
         self.c.pack(side = LEFT, fill=BOTH, expand=1)
 
-        # Button on tab1 that moves to tab2 so that COLOR can be selected
+        # Color Button
         color_button_png = PhotoImage(file='color_button.png')
-        self.color_button = Button(self.tab1, image = color_button_png, height = 100, width = 120, command=self.choose_color)
-        self.color_button.pack(side=TOP, pady=10)
+        self.color_button = Button(self.tab1, image = color_button_png, height = 100, width = 150, command=self.choose_color)
+        self.color_button.pack(side=TOP, pady=5)
 
-        # Button on tab1 that moves to tab 3 so that TOOL can be selected
-        tool_button_png = PhotoImage(file='art_tools_button.png')
-        self.tool_button = Button(self.tab1, image = tool_button_png, height = 100, width = 120, command=self.choose_tool)
-        self.tool_button.pack(side=TOP, pady=10)
+        # Shape Button
+        shape_button_png = PhotoImage(file='shape_button.PNG')
+        self.shape_button = Button(self.tab1, image = shape_button_png, height = 100, width = 150, command=self.choose_tool)
+        self.shape_button.pack(side=TOP, pady=5)
 
         # Eraser Button
         eraser_button_png = PhotoImage(file='eraser_button.png')
-        self.eraser_button = Button(self.tab1, image = eraser_button_png, height = 100, width = 120, command=self.use_eraser)
-        self.eraser_button.pack(side=TOP,pady=10)
+        self.eraser_button = Button(self.tab1, image = eraser_button_png, height = 100, width = 150, command=self.use_eraser)
+        self.eraser_button.pack(side=TOP,pady=5)
 
-        # Size Selection
+        # Size Button
         size_button_png = PhotoImage(file='size_button.PNG')
-        self.choose_size_button = Button(self.tab1, image = size_button_png, height = 100, width = 120, command=self.choose_size)
-        self.choose_size_button.pack(side=TOP,pady=10)
+        self.choose_size_button = Button(self.tab1, image = size_button_png, height = 100, width = 150, command=self.choose_size)
+        self.choose_size_button.pack(side=TOP,pady=5)
+
+        # Undo Button
+        undo_button_png = PhotoImage(file='undo_button.png')
+        self.undo_button = Button(self.tab1, image = undo_button_png, height = 100, width = 150, command = self.undo)
+        self.undo_button.pack(side=TOP,pady=5)
 
         # Save Button
         self.filename = StringVar()
         self.filename = 'filename'
         save_button_png = PhotoImage(file='save_button.png')
-        self.save_button = Button(self.tab1, image = save_button_png, height = 100, width = 120, command=self.snapsave)
-        self.save_button.pack(side=TOP,pady=10)
+        self.save_button = Button(self.tab1, image = save_button_png, height = 100, width = 150, command=self.snapsave)
+        self.save_button.pack(side=TOP,pady=5)
 
-        # Undo Button
-        undo_button_png = PhotoImage(file='undo_button.png')
-        self.undo_button = Button(self.tab1, image = undo_button_png, height = 100, width = 120, command = self.undo)
-        self.undo_button.pack(side=TOP,pady=10)
+
 
         # Quit Button
-        self.close_window = Button(self.tab1, text="Quit")
+        self.close_window = Button(self.tab1, text="Quit", command = exit)
         self.close_window.pack(side=TOP,pady=20)
 
         ## TAB 2: COLORS
         self.redColor = Button(self.tab2, text='red', bg='red', width=30, height=10, command=self.colorRed)
-        self.redColor.place(relx=0.25, rely=0,anchor=NW)
+        self.redColor.place(relx=0.20, rely=0,anchor=NW)
 
         self.blueColor = Button(self.tab2, text='blue', bg='blue', width=30, height=10, command=self.colorBlue)
         self.blueColor.place(relx=.5, rely=0,anchor=N)
 
         self.yellowColor = Button(self.tab2, text='yellow', bg='yellow', width=30, height=10, command=self.colorYellow)
-        self.yellowColor.place(relx=0.75, rely=0,anchor=NE)
+        self.yellowColor.place(relx=0.80, rely=0,anchor=NE)
 
         self.greenColor = Button(self.tab2, text='green', bg='green', width=30, height=10, command=self.colorGreen)
-        self.greenColor.place(relx=0.25, rely=.4,anchor=W)
+        self.greenColor.place(relx=0.20, rely=.4,anchor=W)
 
         self.orangeColor = Button(self.tab2, text='orange', bg='orange', width=30, height=10, command=self.colorOrange)
         self.orangeColor.place(relx=.50, rely=.4,anchor=CENTER)
 
         self.purpleColor = Button(self.tab2, text='purple', bg='purple', width=30, height=10, command=self.colorPurple)
-        self.purpleColor.place(relx=0.75, rely=.4,anchor=E)
+        self.purpleColor.place(relx=0.80, rely=.4,anchor=E)
 
         self.blackColor = Button(self.tab2, text='black', bg='black', fg='white', width=30, height=10, command=self.colorBlack, relief=SUNKEN)
-        self.blackColor.place(relx=0.25, rely=.8,anchor=SW)
+        self.blackColor.place(relx=0.20, rely=.8,anchor=SW)
         self.currentColor = self.blackColor
 
         self.greyColor = Button(self.tab2, text='grey', bg='grey', width=30, height=10, command=self.colorGrey)
         self.greyColor.place(relx=.5, rely=.8,anchor=S)
 
-        self.brownColor = Button(self.tab2, text='brown', bg='brown', width=30, height=10, command=self.colorBrown)
-        self.brownColor.place(relx=0.75, rely=.8,anchor=SE)
+        self.brownColor = Button(self.tab2, text='brown', bg="#4E2C04", width=30, height=10, command=self.colorBrown)
+        self.brownColor.place(relx=0.80, rely=.8,anchor=SE)
 
         # Adds button on tab2 to return to drawing (tab1)
         return_button_png = PhotoImage(file='return_button.png')
@@ -143,11 +159,22 @@ class Paint(object):
         self.return_from_color.pack(side=BOTTOM)
 
         ## TAB 3: TOOLS - TOOLS CURRENTLY ARE NOT DIFFERENT
-        self.pen_button = Button(self.tab3, text='pen', command=self.use_pen)
-        self.pen_button.pack(side=TOP, padx=1)
+        self.lastGUIButtonShape = False
 
-        self.brush_button = Button(self.tab3, text='brush', command=self.use_brush)
-        self.brush_button.pack(side=TOP, padx=2)
+        self.pen_button = Button(self.tab3, text='pen', command=self.use_pen)
+        self.pen_button.pack(side=BOTTOM, padx=1)
+
+        circle_png = PhotoImage(file ='circle.PNG')
+        self.circle_button = Button(self.tab3, image = circle_png, height = 200, width = 250, command=self.use_circle)
+        self.circle_button.place(relx = 0.20, rely = 0.5, anchor=W)
+
+        triangle_png = PhotoImage(file ='triangle.PNG')
+        self.triangle_button = Button(self.tab3, image = triangle_png, height = 200, width = 250, command=self.use_triangle)
+        self.triangle_button.place(relx = 0.5, rely = 0.5, anchor = CENTER)
+
+        square_png = PhotoImage(file ='square.PNG')
+        self.rectangle_button = Button(self.tab3, image = square_png, height = 200, width = 250, command=self.use_rectangle)
+        self.rectangle_button.place(relx = 0.80, rely = 0.5, anchor = E)
 
         # Adds button on tab3 to return to drawing (tab1)
         self.return_from_tool = Button(self.tab3, image=return_button_png, height=125, width=125, command=self.return_to_drawing)
@@ -155,29 +182,29 @@ class Paint(object):
 
         ##TAB 4: SIZE
         size1_png = PhotoImage(file='size_1.PNG')
-        self.first_size = Button(self.tab4, image = size1_png, height=200, width=200, command=self.size1)
-        self.first_size.place(relx=0.25, rely=0,anchor=NW)
+        self.first_size = Button(self.tab4, image = size1_png, height=200, width=250, command=self.size1)
+        self.first_size.place(relx=0.20, rely=0,anchor=NW)
         self.currentSize = self.first_size
 
         size2_png = PhotoImage(file='size_2.PNG')
-        self.second_size = Button(self.tab4, image = size2_png, height=200, width=200, command=self.size2)
+        self.second_size = Button(self.tab4, image = size2_png, height=200, width=250, command=self.size2)
         self.second_size.place(relx=.5, rely=0, anchor=N)
 
         size3_png = PhotoImage(file='size_3.PNG')
-        self.third_size = Button(self.tab4, image = size3_png,height=200, width=200, command=self.size3)
-        self.third_size.place(relx=0.75, rely=0,anchor=NE)
+        self.third_size = Button(self.tab4, image = size3_png,height=200, width=250, command=self.size3)
+        self.third_size.place(relx=0.80, rely=0,anchor=NE)
 
         size4_png = PhotoImage(file='size_4.PNG')
-        self.fourth_size = Button(self.tab4, image = size4_png, height=200, width=200, command=self.size4)
-        self.fourth_size.place(relx=0.25, rely=.5,anchor=W)
+        self.fourth_size = Button(self.tab4, image = size4_png, height=200, width=250, command=self.size4)
+        self.fourth_size.place(relx=0.20, rely=.5,anchor=W)
 
         size5_png = PhotoImage(file='size_5.PNG')
-        self.fifth_size = Button(self.tab4, image = size5_png, height=200, width=200, command=self.size5)
+        self.fifth_size = Button(self.tab4, image = size5_png, height=200, width=250, command=self.size5)
         self.fifth_size.place(relx=.5, rely=.5,anchor=CENTER)
 
         size6_png = PhotoImage(file='size_6.PNG')
-        self.sixth_size = Button(self.tab4, image = size6_png, height=200, width=200, command=self.size6)
-        self.sixth_size.place(relx=0.75, rely=.5, anchor=E)
+        self.sixth_size = Button(self.tab4, image = size6_png, height=200, width=250, command=self.size6)
+        self.sixth_size.place(relx=0.80, rely=.5, anchor=E)
 
         # Adds button on tab4 to return to drawing (tab1)
         self.return_from_size = Button(self.tab4, image=return_button_png, height=125, width=125,command=self.return_to_drawing)
@@ -198,7 +225,8 @@ class Paint(object):
         self.active_button = self.pen_button
         self.c.bind('<Motion>', self.paint)
         self.c.bind('<ButtonRelease-1>', self.reset)
-
+        self.c.bind('<Motion>', self.callbackShape,self.paint)
+        self.c.bind('<ButtonPress-1>', self.resetShape)
 
     def choose_tool(self):
         """Moves to tab3 so that tool can be chosen"""
@@ -211,6 +239,35 @@ class Paint(object):
         """ Returns to tab1"""
         self.tabControl.select(self.tab1)
 
+    def use_circle(self):
+        self.activate_button(self.circle_button)
+        self.currentShape = self.c.create_oval(0, 0, 10 * (self.line_width), 10 * (self.line_width), fill=self.color,
+                                               tag="oval")
+        self.tag = "oval"
+        self.toDelete = False
+        self.lastGUIButtonShape=True
+        self.return_to_drawing()
+
+    def use_triangle(self):
+        self.activate_button(self.triangle_button)
+        # self.currentShape = self.c.create_oval(0, 0, 10*(self.line_width), 10*(self.line_width), fill = self.color, tag = "oval")
+        self.currentShape = self.c.create_polygon(
+            [0, 0, 10 * self.line_width, 0, (10 * self.line_width) / 2 - 10 * self.line_width, 0]
+            , fill=self.color, tags="triangle")
+        self.tag = "triangle"
+        self.toDelete = False
+        print(self.c.type(self.currentShape))
+        self.lastGUIButtonShape=True
+        self.return_to_drawing()
+
+    def use_rectangle(self):
+        self.activate_button(self.rectangle_button)
+        self.currentShape = self.c.create_rectangle(0, 0, 10 * (self.line_width), 10 * (self.line_width),
+                                                    fill=self.color, tag="rectangle")
+        self.tag = "rectangle"
+        self.toDelete = False
+        self.lastGUIButtonShape=True
+        self.return_to_drawing()
     def use_brush(self):
         self.activate_button(self.brush_button)
 
@@ -228,8 +285,12 @@ class Paint(object):
         self.tabControl.select(self.tab4)
 
     def undo(self):
-        for k in range(len(self.linelist)):
-            self.c.delete(self.linelist[k])
+        if(self.lastGUIButtonShape ==False):
+            for k in range(len(self.linelist)):
+                self.c.delete(self.linelist[k])
+        else:
+            self.c.delete(self.currentShape)
+            self.toDelete = True
 
     def activate_button(self, some_button, eraser_mode=False):
         self.active_button.config(relief=RAISED)
@@ -237,7 +298,7 @@ class Paint(object):
         self.active_button = some_button
         self.eraser_on = eraser_mode
 
-    def paint(self, event):
+    '''def paint(self, event):
         #self.line_width = self.choose_size_button.get()
         paint_color = 'white' if self.eraser_on else self.color
         if self.old_x and self.old_y:
@@ -246,25 +307,43 @@ class Paint(object):
                                capstyle=ROUND,smooth=TRUE, splinesteps=36)
             self.linelist.append(newline)
         self.old_x = event.x
-        self.old_y = event.y
+        self.old_y = event.y'''
+    def paint(self, event):
+        #self.line_width = self.choose_size_button.get()
+        global justPressed
+        if paint_on:
+            self.lastGUIButtonShape=False
+            if justPressed:
+                paint_color = 'white' if self.eraser_on else self.color
+                self.linelist=[]
+                if self.old_x and self.old_y:
+                    newline = self.c.create_line(event.x, event.y, event.x, event.y,
+                        width=self.line_width, fill=paint_color,
+                        capstyle=ROUND,smooth=TRUE, splinesteps=36)
+                    self.linelist.append(newline)
+
+
+
+                self.old_x = event.x
+                self.old_y = event.y
+                justPressed=False
+            else:
+                paint_color = 'white' if self.eraser_on else self.color
+                if self.old_x and self.old_y:
+                    newline = self.c.create_line(self.old_x, self.old_y, event.x, event.y,
+                                       width=self.line_width, fill=paint_color,
+                                       capstyle=ROUND,smooth=TRUE, splinesteps=36)
+                    self.linelist.append(newline)
+
+                self.old_x = event.x
+                self.old_y = event.y
 
     def reset(self, event):
         self.old_x, self.old_y = None, None
 
-    """def closeWindow(self):
-        self.checkQuit = Toplevel()
-        self.checkQuit.wm_title("Are you sure you would like to quit?")
-        self.checkQuit.attributes("-topmost", True)
-        self.checking = Label(self.checkQuit, text="Are you sure you would like to quit?")
-        self.checking.grid(row=0, column=1)
-        self.yesQuit = Button(self.checkQuit, text="Yes", command = exit)
-        self.yesQuit.grid(row=1,column=0)
-        self.dontQuit = Button(self.checkQuit, text="No", command = self.checkQuit.destroy)
-        self.dontQuit.grid(row=1,column=2)"""
-
-    ## SAVING:
+    ## SAVING: Save screenshot of canvas
     def snapsave(self):
-        """Takes a screenshot and saves as .jpg file with previously chosen name"""
+        """ Take screenshot of canvas and save as a .jpg file with the previously chosen name """
         canvas = self._canvas()  # Get Window Coordinates of Canvas
         savename = self.filename + '.jpg'
         self.grabcanvas = ImageGrab.grab(bbox=canvas).save(savename)
@@ -276,7 +355,6 @@ class Paint(object):
         x1=x+self.c.winfo_width()
         y1=y+self.c.winfo_height()
         box=(x,y,x1,y1)
-        #print('box = ', box)
         return box
 
     def get_name(self):
@@ -338,7 +416,7 @@ class Paint(object):
         self.return_to_drawing()
 
     def colorBrown(self):
-        self.color='brown'
+        self.color="#4E2C04"
         self.currentColor.config(relief=RAISED)
         self.brownColor.config(relief=SUNKEN)
         self.currentColor = self.brownColor
@@ -394,7 +472,7 @@ class Paint(object):
         self.currentSize = self.sixth_size
         self.return_to_drawing()
 
-    ## TEMPLATE FUNCTIONS: Add or remove template from canvas
+    ## TEMPLATE FUNCTIONS: Add or remove templates from canvas
     def makePostcard(self):
         """Creates a postcard template"""
         self.c.delete('all')
@@ -419,7 +497,7 @@ class Paint(object):
         self.c.create_rectangle(250,50,450,550)
         self.c.create_oval(330,60,370,100)
 
-    ## WARNING FUNCTIONS:
+    ## WARNING FUNCTIONS: Displays warning after 45 minutes of use
     def warning(self):
         """Display warning when the user has been working for 45 minutes to warn against overuse"""
         self.display_warning = Toplevel()
@@ -435,6 +513,63 @@ class Paint(object):
         self.display_warning.destroy()
         self.root.attributes("-topmost", True)
 
-if __name__ == '__main__':
-    Paint()
+    def draw(self, x, y):
+        #if (self.currentShape != None):
+        if(self.toDelete == False):
+            # print(self.c.type(self.currentShape))
+            if (self.tag == "oval"):
+                self.c.coords(self.currentShape, x, y, x + 10 * self.line_width, y + 10 * self.line_width)
+            if (self.tag == "triangle"):
+                self.c.coords(self.currentShape, x, y, x + 10 * self.line_width, y, x + (10 * self.line_width) / 2,
+                              y - 10 * self.line_width)
+            if (self.tag == "rectangle"):
+                self.c.coords(self.currentShape, x, y, x + 10 * self.line_width, y + 10 * self.line_width)
 
+    def callbackShape(self, event):
+        #if (self.currentShape != None):
+        if(self.toDelete == False):
+            self.draw(event.x, event.y)
+
+    def resetShape(self, event):
+        #self.currentShape = None
+        self.toDelete = True
+        print('reset')
+
+# Setting up for button interrupt:
+def signal_handler(sig, frame):
+    GPIO.cleanup()
+    sys.exit()
+
+
+
+def button_pressed(channel):
+    global x
+    global paint_on
+    global justPressed
+    global resetState
+
+    if paint_on:
+        paint_on=False
+    else:
+        paint_on = True
+        justPressed = True
+
+
+
+
+
+if __name__ == '__main__':
+    ## SETTING UP PHYSICAL BUTTON
+    global button_state
+    global justPressed
+    justPressed = True
+    button_state = '<Deactivate>'
+    GPIO.setmode(GPIO.BCM)
+    #GPIO.setup(2, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(3, GPIO.IN)
+    GPIO.add_event_detect(3, GPIO.FALLING, callback=button_pressed, bouncetime=500)
+    #GPIO.add_event_detect(2, GPIO.BOTH, callback=button_pressed, bouncetime=50)
+    signal.signal(signal.SIGINT, signal_handler)
+    signal.pause
+
+    x = Paint()

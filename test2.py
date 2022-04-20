@@ -16,11 +16,11 @@ class Paint(object):
         self.brush_button = Button(self.root, text='brush', command=self.use_brush)
         self.brush_button.grid(row=0, column=1)
 
-        color_button_png = PhotoImage(file= 'color_button.png')
+        color_button_png = PhotoImage(file='color_button.png')
         self.color_button = Button(self.root, image = color_button_png, command=self.choose_color)
         self.color_button.grid(row=0, column=2)
 
-        eraser_button_png = PhotoImage(file = 'eraser_button.png')
+        eraser_button_png = PhotoImage(file ='eraser_button.png')
         self.eraser_button = Button(self.root, image = eraser_button_png, text='eraser', command=self.use_eraser)
         self.eraser_button.grid(row=0, column=3)
 
